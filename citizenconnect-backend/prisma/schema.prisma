@@ -1,0 +1,104 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ✅ NEW: Status enum for 5-stage pipeline
+enum ComplaintStatus {
+  Raised
+  Acknowledged
+  InProgress
+  Resolved
+  Closed
+}
+
+model Complaint {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  domain       String           // high-level domain
+  category     String            // specific issue
+  department   String?           // derived or selected department
+  mediaUrl     String?
+  location     String?
+
+ // ✅ UPDATED: Use enum instead of String
+  status       ComplaintStatus   @default(Raised)
+
+// ✅ NEW: Assignment tracking
+  assignedToId   Int?              // ID of assigned employee
+  assignedTo     User?   @relation("AssignedComplaints", fields: [assignedToId], references: [id])
+  assignedAt     DateTime?         // When it was assigned
+  assignedById   Int?              // Who assigned it
+  assignedBy     User?   @relation("AssignedByUser", fields: [assignedById], references: [id])
+
+// Link to User (Citizen)
+  userId Int      
+  user   User @relation("CreatedComplaints",fields: [userId], references: [id])
+
+ // ✅ NEW: Time tracking for analytics
+  acknowledgedAt  DateTime?
+  inProgressAt    DateTime?
+  resolvedAt      DateTime?
+  closedAt        DateTime?
+
+// Link to StatusUpdates
+  createdAt   DateTime @default(now())     
+  statusUpdates StatusUpdate[]
+}
+
+model StatusUpdate {
+  id          Int       @id @default(autoincrement())
+  status      String
+  remarks     String?
+  updatedAt   DateTime  @default(now())
+  complaintId Int
+  complaint   Complaint @relation(fields: [complaintId], references: [id])
+}
+
+// ============================
+// USER MODEL FOR AUTH
+// ============================
+
+enum Role {
+  CITIZEN
+  DEPARTMENT_EMPLOYEE
+  DEPARTMENT_ADMIN
+  CITY_ADMIN
+  SUPER_ADMIN
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role     @default(CITIZEN)
+  
+  // Department field for employees/admins
+  department String?  // e.g., "Electrical", "Water", "Roads"
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relationships
+  createdComplaints     Complaint[] @relation("CreatedComplaints")
+  assignedComplaints    Complaint[] @relation("AssignedComplaints")
+  assignedByComplaints  Complaint[] @relation("AssignedByUser")
+}
+
+
+//Purpose: This is your “master configuration” table that defines the dropdowns.
+model DomainCategory {
+  id        Int      @id @default(autoincrement())
+  domain    String
+  category  String
+  department String
+  createdAt   DateTime @default(now())
+
+  @@unique([domain, category], name: "domain_category_unique")
+}
