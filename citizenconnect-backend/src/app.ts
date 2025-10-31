@@ -20,6 +20,8 @@ import assignmentRoutes from "./routes/assignmentRoutes";
 import statusHistoryRoutes from "./routes/statusHistoryRoutes";
 import notificationRoutes from "./routes/notificationRoutes";
 import feedbackRoutes from "./routes/feedbackRoutes";
+import analyticsRoutes from "./routes/analyticsRoutes";
+import archiveRoutes from "./routes/archiveRoutes";
 
 dotenv.config();
 const app = express();
@@ -66,6 +68,8 @@ app.use("/api/assignments", assignmentRoutes);
 app.use("/api/status", statusHistoryRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/feedback", feedbackRoutes);
+app.use("/api/analytics", analyticsRoutes);
+app.use("/api/archive", archiveRoutes);
 
 
 // ✅ Start server
