@@ -25,6 +25,8 @@ model Complaint {
   department   String?           // derived or selected department
   mediaUrl     String?
   location     String?
+  notifications Notification[]
+  feedbacks     Feedback?
 
  // ✅ UPDATED: Use enum instead of String
   status       ComplaintStatus   @default(Raised)
@@ -49,6 +51,7 @@ model Complaint {
 // Link to StatusUpdates
   createdAt   DateTime @default(now())     
   statusUpdates StatusUpdate[]
+
 }
 
 model StatusUpdate {
@@ -66,6 +69,34 @@ model StatusUpdate {
   updatedAt   DateTime  @default(now())
   complaintId Int
   complaint   Complaint @relation(fields: [complaintId], references: [id])
+}
+
+// ✅ NEW: Feedback Model
+model Feedback {
+  id          Int       @id @default(autoincrement())
+  
+  // Rating (1-5 stars)
+  rating      Int       // 1 = Poor, 5 = Excellent
+  
+  // Feedback text
+  comment     String?
+  
+  // Was issue resolved satisfactorily?
+  wasResolved Boolean   @default(true)
+  
+  // Link to complaint (one-to-one)
+  complaintId Int       @unique
+  complaint   Complaint @relation(fields: [complaintId], references: [id])
+  
+  // Link to user who gave feedback
+  userId      Int
+  user        User      @relation(fields: [userId], references: [id])
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  @@index([rating])
+  @@index([createdAt])
 }
 
 // ============================
@@ -98,8 +129,9 @@ model User {
   assignedComplaints    Complaint[] @relation("AssignedComplaints")
   assignedByComplaints  Complaint[] @relation("AssignedByUser")
   statusUpdates         StatusUpdate[]  // ✅ NEW: Track status updates made by user
+  notifications         Notification[]
+  feedbacks             Feedback[]
 }
-
 
 
 //Purpose: This is your “master configuration” table that defines the dropdowns.
@@ -111,4 +143,20 @@ model DomainCategory {
   createdAt   DateTime @default(now())
 
   @@unique([domain, category], name: "domain_category_unique")
+}
+
+// ✅ NEW: Model for storing notifications
+model Notification {
+  id          Int       @id @default(autoincrement())
+  message     String
+  isRead      Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+
+  // Relation: Which user is this notification for?
+  userId      Int
+  user        User      @relation(fields: [userId], references: [id])
+
+  // Relation: Which complaint is this about? (Optional)
+  complaintId Int?
+  complaint   Complaint? @relation(fields: [complaintId], references: [id])
 }

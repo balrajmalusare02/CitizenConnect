@@ -7,6 +7,7 @@
 import { Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 import { io } from "../app";
+import { createAndEmitNotification } from "../utils/notificationService";
 
 // ✅ FIX: Proper interface extending Express Request
 interface AuthenticatedRequest extends Request {
@@ -100,19 +101,20 @@ export const assignComplaint = async (req: AuthenticatedRequest, res: Response) 
     });
 
     // ✅ Emit socket notification to assigned employee
-    io.to(`user:${assignedToId}`).emit("complaint-assigned", {
-      message: `You have been assigned a new complaint: "${complaint.title}"`,
-      complaint: updatedComplaint,
-      assignedBy: admin.name,
-      timestamp: new Date(),
-    });
+    await createAndEmitNotification(
+      parseInt(assignedToId),
+      `You have been assigned a new complaint: "${complaint.title}"`,
+      complaint.id,
+      "complaint-assigned"
+    );
 
     // ✅ Notify complaint creator
-    io.to(`user:${complaint.userId}`).emit("complaint-status-updated", {
-      message: `Your complaint has been assigned to ${assignedUser.name}`,
-      complaint: updatedComplaint,
-      timestamp: new Date(),
-    });
+    await createAndEmitNotification(
+      complaint.userId,
+      `Your complaint has been assigned to ${assignedUser.name}`,
+      complaint.id,
+      "complaint-status-updated"
+    );
 
     console.log(`📢 Complaint #${id} assigned to user ${assignedToId}`);
 

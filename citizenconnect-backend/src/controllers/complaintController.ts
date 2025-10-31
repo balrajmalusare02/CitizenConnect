@@ -7,6 +7,7 @@ import {
   getNextPossibleStatuses,
   getStatusProgressPercentage,
 } from "../utils/statusValidation";
+import { createAndEmitNotification } from "../utils/notificationService";
 
 interface AuthenticatedRequest extends Request {
   user?: {
@@ -491,12 +492,12 @@ const updatedComplaint = await prisma.complaint.update({
   },
 });
     // ✅ Emit real-time notification to complaint owner
-    io.to(`user:${existingComplaint.userId}`).emit("complaint-status-updated", {
-      message: `Your complaint status has been updated to "${newStatus}"`,
-      complaint: updatedComplaint,
-      updatedBy: user.name,
-      timestamp: new Date(),
-    });
+    await createAndEmitNotification(
+      existingComplaint.userId,
+      `Your complaint status has been updated to "${newStatus}"`,
+      existingComplaint.id,
+      "complaint-status-updated"
+    );
 
     // ✅ Emit to complaint-specific room
     io.to(`complaint:${id}`).emit("status-changed", {

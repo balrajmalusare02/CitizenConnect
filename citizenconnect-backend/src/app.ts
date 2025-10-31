@@ -18,6 +18,8 @@ import domainRoutes from "./routes/domainRoutes";
 import complaintRoutes from "./routes/complaintRoutes";
 import assignmentRoutes from "./routes/assignmentRoutes";
 import statusHistoryRoutes from "./routes/statusHistoryRoutes";
+import notificationRoutes from "./routes/notificationRoutes";
+import feedbackRoutes from "./routes/feedbackRoutes";
 
 dotenv.config();
 const app = express();
@@ -62,12 +64,15 @@ app.use("/api/domains", domainRoutes);
 app.use("/api/complaints", complaintRoutes);
 app.use("/api/assignments", assignmentRoutes); 
 app.use("/api/status", statusHistoryRoutes);
+app.use("/api/notifications", notificationRoutes);
+app.use("/api/feedback", feedbackRoutes);
 
-// Global Error Handler (keep this at bottom)
-app.use(errorHandler);
 
 // ✅ Start server
 const PORT = process.env.PORT || 4000;
 server.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+
+// Global Error Handler (keep this at bottom)
+app.use(errorHandler);
 
 export default app;
