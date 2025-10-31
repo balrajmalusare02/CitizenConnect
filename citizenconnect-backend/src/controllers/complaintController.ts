@@ -339,11 +339,15 @@ export const getComplaintById = async (req: Request, res: Response) => {
 
     if (!complaint) return res.status(404).json({ message: "Complaint not found" });
 
-    // ✅ NEW: Add progress percentage
+    // ✅ FIXED: Actually include the values in response
     const progressPercentage = getStatusProgressPercentage(complaint.status);
     const nextPossibleStatuses = getNextPossibleStatuses(complaint.status);
     
-    res.status(200).json(complaint);
+        res.status(200).json({
+      ...complaint,
+      progressPercentage,
+      nextPossibleStatuses,
+    });
   } catch (error) {
     console.error("Error fetching complaint:", error);
     res.status(500).json({ message: "Failed to fetch complaint" });
@@ -409,7 +413,10 @@ export const updateComplaintStatus = async (req: any, res: Response) => {
     // Check if complaint exists
     const existingComplaint = await prisma.complaint.findUnique({ 
       where: { id: parseInt(id) },
-      include: { user: true }
+      include: { 
+        user: true,
+        statusUpdates: true, // ✅ Include statusUpdates so we can access it below
+      }
     });
     
     if (!existingComplaint) {
@@ -453,21 +460,36 @@ export const updateComplaintStatus = async (req: any, res: Response) => {
     }
 
 
-    // Update complaint status + create a status update log
-    const updatedComplaint = await prisma.complaint.update({
-      where: { id: parseInt(id) },
-      data: {
+// Update complaint status + create a status update log
+const updatedComplaint = await prisma.complaint.update({
+  where: { id: parseInt(id) },
+  data: {
+    status: newStatus,
+    ...timestampField,  // ✅ This line should already be there from Step 3.1
+    statusUpdates: {
+      create: {
         status: newStatus,
-        statusUpdates: {
-          create: {
-            status: newStatus,
-            remarks: remarks || `${newStatus} updated by ${user.role}`,
-          },
-        },
+        remarks: remarks || `${newStatus} updated by ${user.role}`,
+        updatedById: user.id,  // ✅ ADD THIS LINE - Track who made update
+        timeSpentInPreviousStatus: existingComplaint.statusUpdates.length > 0  // ✅ ADD THIS BLOCK
+          ? Math.floor(
+              (new Date().getTime() - 
+                new Date(existingComplaint.statusUpdates[existingComplaint.statusUpdates.length - 1].updatedAt).getTime()) / 
+                (1000 * 60)
+            )
+          : null,
       },
-      include: { statusUpdates: true, user: true },
-    });
-
+    },
+  },
+  include: { 
+    statusUpdates: {
+      include: {
+        updatedBy: { select: { id: true, name: true, role: true } }  // ✅ ADD THIS - Include who made update
+      }
+    }, 
+    user: true 
+  },
+});
     // ✅ Emit real-time notification to complaint owner
     io.to(`user:${existingComplaint.userId}`).emit("complaint-status-updated", {
       message: `Your complaint status has been updated to "${newStatus}"`,

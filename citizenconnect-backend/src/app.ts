@@ -17,6 +17,7 @@ import adminRoutes from "./routes/adminRoutes";
 import domainRoutes from "./routes/domainRoutes";
 import complaintRoutes from "./routes/complaintRoutes";
 import assignmentRoutes from "./routes/assignmentRoutes";
+import statusHistoryRoutes from "./routes/statusHistoryRoutes";
 
 dotenv.config();
 const app = express();
@@ -59,7 +60,8 @@ app.use("/api/protected", protectedRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/domains", domainRoutes);
 app.use("/api/complaints", complaintRoutes);
-app.use("/api/assignments", assignmentRoutes); // ✅ ADDED
+app.use("/api/assignments", assignmentRoutes); 
+app.use("/api/status", statusHistoryRoutes);
 
 // Global Error Handler (keep this at bottom)
 app.use(errorHandler);

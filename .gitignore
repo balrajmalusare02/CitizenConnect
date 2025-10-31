@@ -18,7 +18,9 @@ citizenconnect-backend/logs/
 # Ignores files like 'prisma.config.js.bak'
 *.bak
 
-
+# Ignore root-level documents and images
+*.pdf
+streetlight_example.jpg
 
 # OS-specific files
 .DS_Store

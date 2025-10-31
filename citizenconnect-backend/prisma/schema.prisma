@@ -55,6 +55,14 @@ model StatusUpdate {
   id          Int       @id @default(autoincrement())
   status      String
   remarks     String?
+
+  // ✅ NEW: Track who made the update
+  updatedById Int?
+  updatedBy   User?     @relation(fields: [updatedById], references: [id])
+
+  // ✅ NEW: Track time spent in previous status
+  timeSpentInPreviousStatus Int?  // in minutes
+  
   updatedAt   DateTime  @default(now())
   complaintId Int
   complaint   Complaint @relation(fields: [complaintId], references: [id])
@@ -89,7 +97,9 @@ model User {
   createdComplaints     Complaint[] @relation("CreatedComplaints")
   assignedComplaints    Complaint[] @relation("AssignedComplaints")
   assignedByComplaints  Complaint[] @relation("AssignedByUser")
+  statusUpdates         StatusUpdate[]  // ✅ NEW: Track status updates made by user
 }
+
 
 
 //Purpose: This is your “master configuration” table that defines the dropdowns.
