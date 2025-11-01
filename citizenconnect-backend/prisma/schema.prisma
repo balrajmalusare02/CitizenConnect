@@ -121,8 +121,10 @@ enum Role {
   CITIZEN
   DEPARTMENT_EMPLOYEE
   DEPARTMENT_ADMIN
+  WARD_OFFICER
   CITY_ADMIN
   SUPER_ADMIN
+  MAYOR
 }
 
 model User {
@@ -134,6 +136,9 @@ model User {
   
   // Department field for employees/admins
   department String?  // e.g., "Electrical", "Water", "Roads"
+
+  // ✅ NEW: Add ward field for Ward Officers
+  ward         String?  // e.g., "Ward 5"
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

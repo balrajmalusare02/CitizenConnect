@@ -13,7 +13,7 @@ import { asyncHandler } from "../middlewares/asyncHandler";
 // USER REGISTRATION
 // ----------------------
 export const registerUser = asyncHandler(async (req: Request, res: Response) => {
-  const { name, email, password, role } = req.body;
+  const { name, email, password, role, department, ward } = req.body;
 
   // Check if user exists
   const existingUser = await prisma.user.findUnique({ where: { email } });
@@ -29,6 +29,8 @@ export const registerUser = asyncHandler(async (req: Request, res: Response) => 
       email,
       password: hashedPassword,
       role: role || "CITIZEN",
+      department: department || null,
+      ward: ward || null,
     },
   });
 
