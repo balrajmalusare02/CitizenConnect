@@ -26,6 +26,14 @@ model Complaint {
   mediaUrl     String?
   location     String?
   notifications Notification[]
+
+// ✅ NEW: Geo-location fields
+  latitude     Float?
+  longitude    Float?
+  ward         String?    // Ward number/name (e.g., "Ward 5")
+  zone         String?    // Zone (e.g., "Zone A", "North Zone")
+  district     String?    // District/Region
+
   feedbacks     Feedback?
 
  // ✅ UPDATED: Use enum instead of String
@@ -51,6 +59,12 @@ model Complaint {
 // Link to StatusUpdates
   createdAt   DateTime @default(now())     
   statusUpdates StatusUpdate[]
+
+    // ✅ NEW: Indexes for geo queries
+  @@index([latitude, longitude])
+  @@index([ward])
+  @@index([zone])
+  @@index([district])
 
 }
 

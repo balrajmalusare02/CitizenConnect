@@ -22,6 +22,7 @@ import notificationRoutes from "./routes/notificationRoutes";
 import feedbackRoutes from "./routes/feedbackRoutes";
 import analyticsRoutes from "./routes/analyticsRoutes";
 import archiveRoutes from "./routes/archiveRoutes";
+import heatmapRoutes from "./routes/heatmapRoutes";
 
 dotenv.config();
 const app = express();
@@ -70,6 +71,7 @@ app.use("/api/notifications", notificationRoutes);
 app.use("/api/feedback", feedbackRoutes);
 app.use("/api/analytics", analyticsRoutes);
 app.use("/api/archive", archiveRoutes);
+app.use("/api/heatmap", heatmapRoutes);
 
 
 // ✅ Start server

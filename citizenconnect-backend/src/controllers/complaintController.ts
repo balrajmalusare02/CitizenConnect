@@ -82,7 +82,18 @@ const findAvailableEmployee = async (department: string): Promise<number | null>
 // 🆕 Raise a Complaint (with auto-assignment + media upload)
 export const raiseComplaint = async (req: AuthenticatedRequest, res: Response) => {
   try {
-    const { title, description, domain, category, location } = req.body;
+    const { 
+      title, 
+      description, 
+      domain, 
+      category, 
+      location,
+      latitude,      // ✅ NEW
+      longitude,     // ✅ NEW
+      ward,          // ✅ NEW
+      zone,          // ✅ NEW
+      district       // ✅ NEW
+    } = req.body;
     const userId = req.user?.id;
     
     // ✅ NEW: Get media URL from uploaded file (if exists)
@@ -98,6 +109,14 @@ export const raiseComplaint = async (req: AuthenticatedRequest, res: Response) =
 
     if (!title || !description || !domain || !category) {
       return res.status(400).json({ message: "All fields are required!" });
+    }
+
+    // ✅ Validate geo-coordinates if provided
+    if (latitude && (latitude < -90 || latitude > 90)) {
+      return res.status(400).json({ message: "Invalid latitude. Must be between -90 and 90" });
+    }
+    if (longitude && (longitude < -180 || longitude > 180)) {
+      return res.status(400).json({ message: "Invalid longitude. Must be between -180 and 180" });
     }
 
     // ✅ Auto-determine department from domain/category
@@ -127,6 +146,12 @@ export const raiseComplaint = async (req: AuthenticatedRequest, res: Response) =
         category,
         mediaUrl,
         location,
+        // ✅ NEW: Geo fields
+        latitude: latitude ? parseFloat(latitude) : null,
+        longitude: longitude ? parseFloat(longitude) : null,
+        ward: ward || null,
+        zone: zone || null,
+        district: district || null,
         department,
         status: autoAssignedEmployeeId ? "Acknowledged" : "Raised",
         userId,
@@ -178,6 +203,7 @@ export const raiseComplaint = async (req: AuthenticatedRequest, res: Response) =
       autoAssigned: !!autoAssignedEmployeeId,
       department: department || "Not mapped",
       mediaUploaded: !!mediaUrl,
+      geoLocationAdded: !!(latitude && longitude),
     });
   } catch (error) {
     console.error("Error raising complaint:", error);
