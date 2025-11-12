@@ -160,8 +160,8 @@ export const raiseComplaint = async (req: AuthenticatedRequest, res: Response) =
         acknowledgedAt: autoAssignedEmployeeId ? new Date() : null,
         statusUpdates: autoAssignedEmployeeId ? {
           create: {
-            status: "Acknowledged",
-            remarks: "Auto-assigned by system",
+            status: autoAssignedEmployeeId ? "Acknowledged" : "Raised",
+            remarks: autoAssignedEmployeeId ? "Auto-assigned by system" : "Complaint raised by citizen",
           },
         } : undefined,
       },

@@ -36,6 +36,7 @@ export const getComplaintStatusHistory = async (req: Request, res: Response) => 
         user: {
           select: { id: true, name: true, email: true },
         },
+        feedbacks: true,
       },
     });
 
@@ -90,6 +91,7 @@ export const getComplaintStatusHistory = async (req: Request, res: Response) => 
       totalResolutionTime: totalResolutionTime
         ? formatDuration(totalResolutionTime)
         : "In Progress",
+      hasFeedback: !!complaint.feedbacks,
       timeline,
     });
   } catch (error) {

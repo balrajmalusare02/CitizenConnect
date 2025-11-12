@@ -21,7 +21,7 @@ const storage = new CloudinaryStorage({
   params: async (req, file) => {
     return {
       folder: "citizenconnect/complaints",
-      allowed_formats: ["jpg", "jpeg", "png", "gif", "mp4", "mov", "avi"],
+      allowed_formats: ["jpg", "jpeg", "png", "gif", "mp4", "mov", "avi", "webp"],
       resource_type: file.mimetype.startsWith("video") ? "video" : "image",
       public_id: `complaint-${Date.now()}`,
     };
@@ -30,15 +30,19 @@ const storage = new CloudinaryStorage({
 
 // File filter for validation
 const fileFilter = (req: any, file: Express.Multer.File, cb: any) => {
+
+  //console.log("FILE MIME TYPE RECEIVED:", file.mimetype);
   // Allow images and videos only
   const allowedMimeTypes = [
     "image/jpeg",
     "image/jpg",
     "image/png",
     "image/gif",
+    "image/webp",
     "video/mp4",
     "video/quicktime",
     "video/x-msvideo",
+    "application/octet-stream",
   ];
 
   if (allowedMimeTypes.includes(file.mimetype)) {

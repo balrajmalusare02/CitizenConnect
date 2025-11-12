@@ -7,7 +7,110 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ✅ NEW: Status enum for 5-stage pipeline
+model Complaint {
+  id             Int             @id @default(autoincrement())
+  title          String
+  description    String
+  domain         String
+  category       String
+  department     String?
+  mediaUrl       String?
+  location       String?
+  latitude       Float?
+  longitude      Float?
+  ward           String?
+  zone           String?
+  district       String?
+  status         ComplaintStatus @default(Raised)
+  assignedToId   Int?
+  assignedAt     DateTime?
+  assignedById   Int?
+  userId         Int
+  acknowledgedAt DateTime?
+  inProgressAt   DateTime?
+  resolvedAt     DateTime?
+  closedAt       DateTime?
+  createdAt      DateTime        @default(now())
+  assignedBy     User?           @relation("AssignedByUser", fields: [assignedById], references: [id])
+  assignedTo     User?           @relation("AssignedComplaints", fields: [assignedToId], references: [id])
+  user           User            @relation("CreatedComplaints", fields: [userId], references: [id])
+  feedbacks      Feedback?
+  notifications  Notification[]
+  statusUpdates  StatusUpdate[]
+
+  @@index([latitude, longitude])
+  @@index([ward])
+  @@index([zone])
+  @@index([district])
+}
+
+model StatusUpdate {
+  id                        Int       @id @default(autoincrement())
+  status                    String
+  remarks                   String?
+  updatedById               Int?
+  timeSpentInPreviousStatus Int?
+  updatedAt                 DateTime  @default(now())
+  complaintId               Int
+  complaint                 Complaint @relation(fields: [complaintId], references: [id])
+  updatedBy                 User?     @relation(fields: [updatedById], references: [id])
+}
+
+model Feedback {
+  id          Int       @id @default(autoincrement())
+  rating      Int
+  comment     String?
+  wasResolved Boolean   @default(true)
+  complaintId Int       @unique
+  userId      Int
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  complaint   Complaint @relation(fields: [complaintId], references: [id])
+  user        User      @relation(fields: [userId], references: [id])
+
+  @@index([rating])
+  @@index([createdAt])
+}
+
+model User {
+  id                   Int            @id @default(autoincrement())
+  name                 String
+  email                String         @unique
+  password             String
+  role                 Role           @default(CITIZEN)
+  department           String?
+  ward                 String?
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
+  assignedByComplaints Complaint[]    @relation("AssignedByUser")
+  assignedComplaints   Complaint[]    @relation("AssignedComplaints")
+  createdComplaints    Complaint[]    @relation("CreatedComplaints")
+  feedbacks            Feedback[]
+  notifications        Notification[]
+  statusUpdates        StatusUpdate[]
+}
+
+model DomainCategory {
+  id         Int      @id @default(autoincrement())
+  domain     String
+  category   String
+  department String
+  createdAt  DateTime @default(now())
+
+  @@unique([domain, category], name: "domain_category_unique")
+}
+
+model Notification {
+  id          Int        @id @default(autoincrement())
+  message     String
+  isRead      Boolean    @default(false)
+  createdAt   DateTime   @default(now())
+  userId      Int
+  complaintId Int?
+  complaint   Complaint? @relation(fields: [complaintId], references: [id])
+  user        User       @relation(fields: [userId], references: [id])
+}
+
 enum ComplaintStatus {
   Raised
   Acknowledged
@@ -15,107 +118,6 @@ enum ComplaintStatus {
   Resolved
   Closed
 }
-
-model Complaint {
-  id          Int      @id @default(autoincrement())
-  title       String
-  description String
-  domain       String           // high-level domain
-  category     String            // specific issue
-  department   String?           // derived or selected department
-  mediaUrl     String?
-  location     String?
-  notifications Notification[]
-
-// ✅ NEW: Geo-location fields
-  latitude     Float?
-  longitude    Float?
-  ward         String?    // Ward number/name (e.g., "Ward 5")
-  zone         String?    // Zone (e.g., "Zone A", "North Zone")
-  district     String?    // District/Region
-
-  feedbacks     Feedback?
-
- // ✅ UPDATED: Use enum instead of String
-  status       ComplaintStatus   @default(Raised)
-
-// ✅ NEW: Assignment tracking
-  assignedToId   Int?              // ID of assigned employee
-  assignedTo     User?   @relation("AssignedComplaints", fields: [assignedToId], references: [id])
-  assignedAt     DateTime?         // When it was assigned
-  assignedById   Int?              // Who assigned it
-  assignedBy     User?   @relation("AssignedByUser", fields: [assignedById], references: [id])
-
-// Link to User (Citizen)
-  userId Int      
-  user   User @relation("CreatedComplaints",fields: [userId], references: [id])
-
- // ✅ NEW: Time tracking for analytics
-  acknowledgedAt  DateTime?
-  inProgressAt    DateTime?
-  resolvedAt      DateTime?
-  closedAt        DateTime?
-
-// Link to StatusUpdates
-  createdAt   DateTime @default(now())     
-  statusUpdates StatusUpdate[]
-
-    // ✅ NEW: Indexes for geo queries
-  @@index([latitude, longitude])
-  @@index([ward])
-  @@index([zone])
-  @@index([district])
-
-}
-
-model StatusUpdate {
-  id          Int       @id @default(autoincrement())
-  status      String
-  remarks     String?
-
-  // ✅ NEW: Track who made the update
-  updatedById Int?
-  updatedBy   User?     @relation(fields: [updatedById], references: [id])
-
-  // ✅ NEW: Track time spent in previous status
-  timeSpentInPreviousStatus Int?  // in minutes
-  
-  updatedAt   DateTime  @default(now())
-  complaintId Int
-  complaint   Complaint @relation(fields: [complaintId], references: [id])
-}
-
-// ✅ NEW: Feedback Model
-model Feedback {
-  id          Int       @id @default(autoincrement())
-  
-  // Rating (1-5 stars)
-  rating      Int       // 1 = Poor, 5 = Excellent
-  
-  // Feedback text
-  comment     String?
-  
-  // Was issue resolved satisfactorily?
-  wasResolved Boolean   @default(true)
-  
-  // Link to complaint (one-to-one)
-  complaintId Int       @unique
-  complaint   Complaint @relation(fields: [complaintId], references: [id])
-  
-  // Link to user who gave feedback
-  userId      Int
-  user        User      @relation(fields: [userId], references: [id])
-  
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  
-  @@index([rating])
-  @@index([createdAt])
-}
-
-// ============================
-// USER MODEL FOR AUTH
-// ============================
 
 enum Role {
   CITIZEN
@@ -125,57 +127,4 @@ enum Role {
   CITY_ADMIN
   SUPER_ADMIN
   MAYOR
-}
-
-model User {
-  id        Int      @id @default(autoincrement())
-  name      String
-  email     String   @unique
-  password  String
-  role      Role     @default(CITIZEN)
-  
-  // Department field for employees/admins
-  department String?  // e.g., "Electrical", "Water", "Roads"
-
-  // ✅ NEW: Add ward field for Ward Officers
-  ward         String?  // e.g., "Ward 5"
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relationships
-  createdComplaints     Complaint[] @relation("CreatedComplaints")
-  assignedComplaints    Complaint[] @relation("AssignedComplaints")
-  assignedByComplaints  Complaint[] @relation("AssignedByUser")
-  statusUpdates         StatusUpdate[]  // ✅ NEW: Track status updates made by user
-  notifications         Notification[]
-  feedbacks             Feedback[]
-}
-
-
-//Purpose: This is your “master configuration” table that defines the dropdowns.
-model DomainCategory {
-  id        Int      @id @default(autoincrement())
-  domain    String
-  category  String
-  department String
-  createdAt   DateTime @default(now())
-
-  @@unique([domain, category], name: "domain_category_unique")
-}
-
-// ✅ NEW: Model for storing notifications
-model Notification {
-  id          Int       @id @default(autoincrement())
-  message     String
-  isRead      Boolean   @default(false)
-  createdAt   DateTime  @default(now())
-
-  // Relation: Which user is this notification for?
-  userId      Int
-  user        User      @relation(fields: [userId], references: [id])
-
-  // Relation: Which complaint is this about? (Optional)
-  complaintId Int?
-  complaint   Complaint? @relation(fields: [complaintId], references: [id])
 }
