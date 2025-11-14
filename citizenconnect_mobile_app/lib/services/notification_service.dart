@@ -6,7 +6,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../models/notification_model.dart';
 
 class NotificationService {
-  final String _baseUrl = "http://10.0.2.2:4000/api/notifications";
+  final String _baseUrl = "https://citizenconnect-zbfh.onrender.com/api/notifications";
   final _storage = const FlutterSecureStorage();
 
   Future<String?> _getToken() async {

@@ -12,7 +12,7 @@ class SocketService {
   final AuthService _authService = AuthService();
 
   // ⚠️ USE 10.0.2.2 for Android Emulator
-  final String _socketUrl = "http://10.0.2.2:4000"; 
+  final String _socketUrl = "https://citizenconnect-zbfh.onrender.com"; 
 
   SocketService._internal();
 

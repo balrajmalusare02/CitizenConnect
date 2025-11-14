@@ -6,7 +6,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../models/complaint_detail_model.dart'; // Import our new model
 
 class StatusService {
-  final String _baseUrl = "http://10.0.2.2:4000/api/status"; // API URL for status
+  final String _baseUrl = "https://citizenconnect-zbfh.onrender.com/api/status"; // API URL for status
   final _storage = const FlutterSecureStorage();
 
   Future<String?> _getToken() async {

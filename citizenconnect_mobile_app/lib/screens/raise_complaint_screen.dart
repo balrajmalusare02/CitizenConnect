@@ -165,6 +165,29 @@ Future<void> _pickImage() async {
 
   // --- UPDATED: Submit function ---
   void _submitComplaint() async {
+    // --- NEW VALIDATION BLOCK ---
+  if (_imageFile == null) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('A photo is required to submit.'),
+        backgroundColor: Colors.red,
+      ),
+    );
+    return; // Stop submission
+  }
+
+  if (_position == null) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Location is required. Please tap "Get Location".'),
+        backgroundColor: Colors.red,
+      ),
+    );
+    return; // Stop submission
+  }
+  // --- END NEW VALIDATION BLOCK ---
+
+  // This code only runs if the checks above pass
     if (_formKey.currentState!.validate()) {
       setState(() {
         _isSubmitting = true;

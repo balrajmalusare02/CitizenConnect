@@ -6,7 +6,7 @@ import 'socket_service.dart';
 
 class AuthService {
   // Use 10.0.2.2 for the Android Emulator
-  final String _baseUrl = "http://10.0.2.2:4000/api/auth"; 
+  final String _baseUrl = "https://citizenconnect-zbfh.onrender.com/api/auth";
   final _storage = const FlutterSecureStorage();
 
   // --- NEW, IMPROVED LOGIN FUNCTION ---

@@ -5,7 +5,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../models/complaint_model.dart';
 
 class ComplaintService {
-  final String _baseUrl = "http://10.0.2.2:4000/api"; // Base API URL
+  final String _baseUrl = "https://citizenconnect-zbfh.onrender.com/api";// Base API URL
   final _storage = const FlutterSecureStorage();
 
   Future<String?> _getToken() async {

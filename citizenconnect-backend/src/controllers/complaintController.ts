@@ -406,6 +406,7 @@ export const getComplaintsByRole = async (req: any, res: Response) => {
       include: {
         user: { select: { id: true, name: true, email: true } },
         statusUpdates: true,
+        feedbacks: true,
       },
       orderBy: { createdAt: "desc" },
     });
