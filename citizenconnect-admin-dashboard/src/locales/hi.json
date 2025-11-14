@@ -1,0 +1,65 @@
+{
+  "login": {
+    "title": "सिटीजनकनेक्ट",
+    "subtitle": "एडमिन पोर्टल",
+    "welcome": "वापसी पर स्वागत है",
+    "newUser": "नए एडमिन?",
+    "identifier": "ईमेल / यूजरनेम / मोबाइल",
+    "password": "पासवर्ड",
+    "loginButton": "लॉगिन करें",
+    "signupButton": "खाता बनाएं",
+    "switchToSignup": "खाता नहीं है? पंजीकरण करें",
+    "switchToLogin": "पहले से खाता है? लॉगिन करें"
+  },
+  "signup": {
+    "title": "एडमिन खाता बनाएं",
+    "name": "पूरा नाम",
+    "email": "ईमेल पता",
+    "username": "यूजरनेम",
+    "mobile": "मोबाइल नंबर",
+    "password": "पासवर्ड",
+    "confirmPassword": "पासवर्ड की पुष्टि करें"
+  },
+  "dashboard": {
+    "title": "एडमिन डैशबोर्ड",
+    "lastUpdate": "अंतिम अपडेट",
+    "totalComplaints": "कुल शिकायतें",
+    "resolved": "हल किया गया",
+    "underReview": "समीक्षाधीन",
+    "pending": "लंबित",
+    "closed": "बंद",
+    "feedback": "फीडबैक प्राप्त",
+    "departmentChart": "विभाग-वार शिकायतें",
+    "areaChart": "क्षेत्र-वार शिकायतें",
+    "allComplaints": "सभी शिकायतें",
+    "refresh": "डेटा रिफ्रेश करें"
+  },
+  "table": {
+    "id": "आईडी",
+    "name": "शिकायतकर्ता का नाम",
+    "mobile": "मोबाइल",
+    "email": "ईमेल",
+    "area": "क्षेत्र/स्थान",
+    "department": "विभाग",
+    "status": "स्थिति",
+    "feedback": "फीडबैक",
+    "createdAt": "बनाया गया",
+    "search": "खोजें",
+    "filterStatus": "स्थिति द्वारा फ़िल्टर करें",
+    "allStatus": "सभी स्थिति",
+    "noFeedback": "कोई फीडबैक नहीं"
+  },
+  "sidebar": {
+    "dashboard": "डैशबोर्ड",
+    "complaints": "सभी शिकायतें",
+    "analytics": "विश्लेषण",
+    "logout": "लॉगआउट"
+  },
+  "status": {
+    "pending": "लंबित",
+    "underReview": "समीक्षाधीन",
+    "underResolving": "समाधान में",
+    "resolved": "हल किया गया",
+    "closed": "बंद"
+  }
+}

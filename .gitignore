@@ -27,3 +27,38 @@ streetlight_example.jpg
 Thumbs.db
 
 /src/generated/prisma
+
+#
+# --- Flutter Mobile App ---
+#
+
+# Flutter/Dart
+citizenconnect_mobile_app/.dart_tool/
+citizenconnect_mobile_app/.flutter-plugins
+citizenconnect_mobile_app/.flutter-plugins-dependencies
+citizenconnect_mobile_app/.pub/
+citizenconnect_mobile_app/.pub_cache/
+citizenconnect_mobile_app/build/
+
+# IDE files
+citizenconnect_mobile_app/.idea/
+citizenconnect_mobile_app/*.iml
+
+# Secret files (Good to add for the future)
+citizenconnect_mobile_app/android/key.properties
+citizenconnect_mobile_app/ios/Runner/GoogleService-Info.plist
+
+# Ignore OS-specific files
+citizenconnect_mobile_app/.DS_Store
+citizenconnect_mobile_app/Thumbs.db
+
+#
+# --- React Admin Panel ---
+#
+admin-dashboard/node_modules/
+admin-dashboard/dist/
+admin-dashboard/dist-ssr/
+admin-dashboard/.env.local
+admin-dashboard/*.local
+admin-dashboard/.idea/
+admin-dashboard/.DS_Store

@@ -1,0 +1,65 @@
+{
+  "login": {
+    "title": "सिटीझनकनेक्ट",
+    "subtitle": "अॅडमिन पोर्टल",
+    "welcome": "परत स्वागत आहे",
+    "newUser": "नवीन अॅडमिन?",
+    "identifier": "ईमेल / यूझरनेम / मोबाईल",
+    "password": "पासवर्ड",
+    "loginButton": "लॉगिन करा",
+    "signupButton": "खाते तयार करा",
+    "switchToSignup": "खाते नाही? नोंदणी करा",
+    "switchToLogin": "आधीच खाते आहे? लॉगिन करा"
+  },
+  "signup": {
+    "title": "अॅडमिन खाते तयार करा",
+    "name": "पूर्ण नाव",
+    "email": "ईमेल पत्ता",
+    "username": "यूझरनेम",
+    "mobile": "मोबाईल नंबर",
+    "password": "पासवर्ड",
+    "confirmPassword": "पासवर्डची पुष्टी करा"
+  },
+  "dashboard": {
+    "title": "अॅडमिन डॅशबोर्ड",
+    "lastUpdate": "शेवटचे अपडेट",
+    "totalComplaints": "एकूण तक्रारी",
+    "resolved": "सोडवले",
+    "underReview": "पुनरावलोकनाखाली",
+    "pending": "प्रलंबित",
+    "closed": "बंद",
+    "feedback": "फीडबॅक प्राप्त",
+    "departmentChart": "विभाग-निहाय तक्रारी",
+    "areaChart": "क्षेत्र-निहाय तक्रारी",
+    "allComplaints": "सर्व तक्रारी",
+    "refresh": "डेटा रिफ्रेश करा"
+  },
+  "table": {
+    "id": "आयडी",
+    "name": "तक्रारकर्त्याचे नाव",
+    "mobile": "मोबाईल",
+    "email": "ईमेल",
+    "area": "क्षेत्र/स्थान",
+    "department": "विभाग",
+    "status": "स्थिती",
+    "feedback": "फीडबॅक",
+    "createdAt": "तयार केले",
+    "search": "शोधा",
+    "filterStatus": "स्थितीनुसार फिल्टर करा",
+    "allStatus": "सर्व स्थिती",
+    "noFeedback": "फीडबॅक नाही"
+  },
+  "sidebar": {
+    "dashboard": "डॅशबोर्ड",
+    "complaints": "सर्व तक्रारी",
+    "analytics": "विश्लेषण",
+    "logout": "लॉगआउट"
+  },
+  "status": {
+    "pending": "प्रलंबित",
+    "underReview": "पुनरावलोकनाखाली",
+    "underResolving": "निराकरणात",
+    "resolved": "सोडवले",
+    "closed": "बंद"
+  }
+}

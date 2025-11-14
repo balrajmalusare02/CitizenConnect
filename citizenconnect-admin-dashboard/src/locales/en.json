@@ -1,0 +1,65 @@
+{
+  "login": {
+    "title": "CitizenConnect",
+    "subtitle": "Admin Portal",
+    "welcome": "Welcome Back",
+    "newUser": "New Admin?",
+    "identifier": "Email / Username / Mobile",
+    "password": "Password",
+    "loginButton": "Login",
+    "signupButton": "Create Account",
+    "switchToSignup": "Don't have an account? Register",
+    "switchToLogin": "Already have an account? Login"
+  },
+  "signup": {
+    "title": "Create Admin Account",
+    "name": "Full Name",
+    "email": "Email Address",
+    "username": "Username",
+    "mobile": "Mobile Number",
+    "password": "Password",
+    "confirmPassword": "Confirm Password"
+  },
+  "dashboard": {
+    "title": "Admin Dashboard",
+    "lastUpdate": "Last updated",
+    "totalComplaints": "Total Complaints",
+    "resolved": "Resolved",
+    "underReview": "Under Review",
+    "pending": "Pending",
+    "closed": "Closed",
+    "feedback": "Feedback Received",
+    "departmentChart": "Department-wise Complaints",
+    "areaChart": "Area/Zone-wise Complaints",
+    "allComplaints": "All Complaints",
+    "refresh": "Refresh data"
+  },
+  "table": {
+    "id": "ID",
+    "name": "Complainer Name",
+    "mobile": "Mobile",
+    "email": "Email",
+    "area": "Area/Location",
+    "department": "Department",
+    "status": "Status",
+    "feedback": "Feedback",
+    "createdAt": "Created At",
+    "search": "Search",
+    "filterStatus": "Filter by Status",
+    "allStatus": "All Status",
+    "noFeedback": "No feedback"
+  },
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "complaints": "All Complaints",
+    "analytics": "Analytics",
+    "logout": "Logout"
+  },
+  "status": {
+    "pending": "Pending",
+    "underReview": "Under Review",
+    "underResolving": "Under Resolving",
+    "resolved": "Resolved",
+    "closed": "Closed"
+  }
+}
