@@ -77,8 +77,13 @@ app.use("/api/dashboard", dashboardRoutes);
 
 
 // ✅ Start server
-const PORT = process.env.PORT || 4000;
-server.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+//const PORT = process.env.PORT || 4000;
+//server.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+
+const HOST = '0.0.0.0';
+server.listen(PORT, HOST, () => {
+  console.log(`🚀 Server running on http://${HOST}:${PORT}`);
+});
 
 // Global Error Handler (keep this at bottom)
 app.use(errorHandler);
