@@ -1,12 +1,11 @@
-//Purpose: Starts your Express app using the port defined in .env
-
-import app from "./app";
+import { server } from "./app"; // Import the http server, not the express app
 import dotenv from "dotenv";
 
 dotenv.config();
 
 const PORT = process.env.PORT || 4000;
+const HOST = '0.0.0.0'; // This is required for Render
 
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
+server.listen(PORT, HOST, () => { // Use server.listen
+  console.log(`🚀 Server running on http://${HOST}:${PORT}`);
 });

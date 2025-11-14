@@ -76,15 +76,15 @@ app.use("/api/heatmap", heatmapRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 
 // ✅ Start server
-const PORT = process.env.PORT || 4000;
-const HOST = "0.0.0.0";
+//const PORT = process.env.PORT || 4000;
+//const HOST = "0.0.0.0";
 
 // Fixed: Correct way to listen on a specific host
-server.listen(Number(PORT), HOST, () => {
-  console.log(`🚀 Server running on http://${HOST}:${PORT}`);
-});
+//server.listen(Number(PORT), HOST, () => {
+//  console.log(`🚀 Server running on http://${HOST}:${PORT}`);
+//});
 
 // Global Error Handler (keep this at bottom)
 app.use(errorHandler);
 
-export default app;
+export { server, app };
