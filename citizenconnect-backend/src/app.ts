@@ -8,8 +8,8 @@ import dotenv from "dotenv";
 
 import { logger } from "./middlewares/logger";
 import { errorHandler } from "./middlewares/errorHandler";
-import { socketAuthMiddleware } from "./middlewares/socketAuthMiddleware"; 
-import { setupSocketHandlers } from "./sockets/socketHandlers"; 
+import { socketAuthMiddleware } from "./middlewares/socketAuthMiddleware";
+import { setupSocketHandlers } from "./sockets/socketHandlers";
 
 import authRoutes from "./routes/authRoutes";
 import protectedRoutes from "./routes/protectedRoutes";
@@ -66,7 +66,7 @@ app.use("/api/protected", protectedRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/domains", domainRoutes);
 app.use("/api/complaints", complaintRoutes);
-app.use("/api/assignments", assignmentRoutes); 
+app.use("/api/assignments", assignmentRoutes);
 app.use("/api/status", statusHistoryRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/feedback", feedbackRoutes);
@@ -75,13 +75,12 @@ app.use("/api/archive", archiveRoutes);
 app.use("/api/heatmap", heatmapRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 
-
 // ✅ Start server
 const PORT = process.env.PORT || 4000;
-//server.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+const HOST = "0.0.0.0";
 
-const HOST = '0.0.0.0';
-server.listen(PORT, HOST, () => {
+// Fixed: Correct way to listen on a specific host
+server.listen(Number(PORT), HOST, () => {
   console.log(`🚀 Server running on http://${HOST}:${PORT}`);
 });
 
