@@ -15,6 +15,8 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isLoading = false;
   String? _errorMessage;
 
+  bool _isPasswordVisible = false;
+
   // You would inject this via Provider, but we'll create it here for simplicity
   final AuthService _authService = AuthService();
 
@@ -50,92 +52,101 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      // We don't need an AppBar if it's the first screen
-      // appBar: AppBar(title: const Text("Login")),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // --- NEW: App Logo/Icon ---
-              Icon(
-                Icons.how_to_vote,
-                size: 80,
-                color: Colors.blue.shade700,
-              ),
-              const SizedBox(height: 16),
-              Text(
-                "CitizenConnect",
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.headlineLarge,
-              ),
-              Text(
-                "Log in to your account",
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-              const SizedBox(height: 40),
-              // --- END NEW ---
+Widget build(BuildContext context) {
+  return Scaffold(
+    body: SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // --- App Logo/Icon ---
+            Icon(
+              Icons.how_to_vote,
+              size: 80,
+              color: Colors.blue.shade700,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              "CitizenConnect",
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.headlineLarge,
+            ),
+            Text(
+              "Log in to your account",
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 40),
 
-              TextField(
-                controller: _emailController,
-                decoration: const InputDecoration(
-                  labelText: "Email",
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.email),
-                ),
-                keyboardType: TextInputType.emailAddress,
+            TextField(
+              controller: _emailController,
+              decoration: const InputDecoration(
+                labelText: "Email",
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.email),
               ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: _passwordController,
-                decoration: const InputDecoration(
-                  labelText: "Password",
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.lock),
-                ),
-                obscureText: true,
-              ),
-              const SizedBox(height: 24),
+              keyboardType: TextInputType.emailAddress,
+            ),
+            const SizedBox(height: 16),
 
-              // --- NEW: Styled Button ---
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  backgroundColor: Colors.blue.shade700,
-                  foregroundColor: Colors.white,
-                ),
-                onPressed: _isLoading ? null : _login,
-                child: _isLoading
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text("Login", style: TextStyle(fontSize: 16)),
-              ),
-              // --- END NEW ---
-
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pushNamed('/register');
-                },
-                child: const Text("Don't have an account? Register"),
-              ),
-              // This is where the red error box will appear
-              if (_errorMessage != null)
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  color: Colors.red.shade100,
-                  child: Text(
-                    _errorMessage!,
-                    style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+            // --- UPDATED PASSWORD FIELD ---
+            TextField(
+              controller: _passwordController,
+              obscureText: !_isPasswordVisible, // Controlled by our variable
+              decoration: InputDecoration(
+                labelText: "Password",
+                border: const OutlineInputBorder(),
+                prefixIcon: const Icon(Icons.lock),
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    _isPasswordVisible
+                        ? Icons.visibility
+                        : Icons.visibility_off,
                   ),
-                )
-            ],
-          ),
+                  onPressed: () {
+                    // Toggle the visibility
+                    setState(() {
+                      _isPasswordVisible = !_isPasswordVisible;
+                    });
+                  },
+                ),
+              ),
+            ),
+            // --- END UPDATE ---
+
+            const SizedBox(height: 24),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                backgroundColor: Colors.blue.shade700,
+                foregroundColor: Colors.white,
+              ),
+              onPressed: _isLoading ? null : _login,
+              child: _isLoading
+                  ? const CircularProgressIndicator(color: Colors.white)
+                  : const Text("Login", style: TextStyle(fontSize: 16)),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pushNamed('/register');
+              },
+              child: const Text("Don't have an account? Register"),
+            ),
+            if (_errorMessage != null)
+              Container(
+                padding: const EdgeInsets.all(12),
+                color: Colors.red.shade100,
+                child: Text(
+                  _errorMessage!,
+                  style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                ),
+              )
+          ],
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 }
