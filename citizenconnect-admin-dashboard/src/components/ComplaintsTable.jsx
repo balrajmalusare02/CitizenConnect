@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+
 import {
   Card,
   CardContent,
@@ -15,10 +16,24 @@ import {
 import { DataGrid } from '@mui/x-data-grid';
 import { Refresh, Phone, Email, LocationOn } from '@mui/icons-material';
 import { complaintService } from '../services/complaintService';
+import AssignComplaintModal from './AssignComplaintModal';
 
 const ComplaintsTable = ({ complaints, onRefresh, onStatusUpdate }) => {
   const [filterStatus, setFilterStatus] = useState('all');
   const [searchText, setSearchText] = useState('');
+
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedComplaintId, setSelectedComplaintId] = useState(null);
+
+  const handleOpenAssignModal = (id) => {
+    setSelectedComplaintId(id);
+    setModalOpen(true);
+  };
+
+  const handleCloseAssignModal = () => {
+    setModalOpen(false);
+    setSelectedComplaintId(null);
+  };
 
   // Handle status change
   const handleStatusChange = async (complaintId, newStatus) => {
@@ -34,7 +49,7 @@ const ComplaintsTable = ({ complaints, onRefresh, onStatusUpdate }) => {
   };
 
   // Table columns
-  const columns = [
+  let columns = [
     {
       field: 'id',
       headerName: 'ID',
@@ -132,6 +147,29 @@ const ComplaintsTable = ({ complaints, onRefresh, onStatusUpdate }) => {
       headerClassName: 'table-header',
       renderCell: (params) => new Date(params.value).toLocaleString('en-IN'),
     },
+
+    {
+    field: 'actions',
+    headerName: 'Actions',
+    width: 120,
+    headerClassName: 'table-header',
+    renderCell: (params) => {
+      // Only show assign button if not already assigned
+      if (!params.row.assignedToId) { 
+        return (
+          <Tooltip title="Assign Complaint">
+            <IconButton
+              color="primary"
+              onClick={() => handleOpenAssignModal(params.row.id)}
+            >
+              <HowToReg />
+            </IconButton>
+          </Tooltip>
+        );
+      }
+      return <Typography variant="caption">Assigned</Typography>;
+    },
+  }
   ];
 
   // Filter complaints
@@ -213,6 +251,14 @@ const ComplaintsTable = ({ complaints, onRefresh, onStatusUpdate }) => {
           />
         </Box>
       </CardContent>
+      <AssignComplaintModal
+            open={modalOpen}
+            onClose={handleCloseAssignModal}
+            complaintId={selectedComplaintId}
+            onSubmitSuccess={() => {
+              onRefresh(); // Refresh the whole table
+            }}
+          />
     </Card>
   );
 };

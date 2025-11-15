@@ -79,4 +79,16 @@ export const complaintService = {
     const response = await api.get('/heatmap/severity-zones');
     return response.data;
   },
+
+  getAssignableEmployees: async () => {
+    const response = await api.get('/assignments/employees');
+    return response.data; // Returns { success: true, employees: [...] }
+  },
+
+  assignComplaint: async (complaintId, employeeId) => {
+    const response = await api.put(`/assignments/${complaintId}/assign`, {
+      assignedToId: employeeId,
+    });
+    return response.data;
+  },
 };
