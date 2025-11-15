@@ -1,37 +1,69 @@
-import React, { useState } from 'react'; // <-- 1. IMPORT useState
+import React, { useState, useEffect } from 'react'; // <-- IMPORT useEffect
 import {
   AppBar, Toolbar, Typography, Box, IconButton, Avatar,
-  Menu, MenuItem // <-- 2. IMPORT Menu and MenuItem
+  Menu, MenuItem, Badge // <-- IMPORT Badge
 } from '@mui/material';
 import { NotificationsNone, AccountCircle } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
-import { authService } from '../services/authService'; // <-- 3. IMPORT authService
+import { authService } from '../services/authService';
+import { notificationService } from '../services/notificationService'; // <-- IMPORT notificationService
+import { socketService } from '../services/socketService'; // <-- IMPORT socketService
+import NotificationMenu from './NotificationMenu'; // <-- IMPORT our new menu
 
 const EMBLEM_URL = 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Emblem_of_India.svg/120px-Emblem_of_India.svg.png';
 
-const Header = ({ onPageChange }) => {
+const Header = ({ onPageChange }) => { // <-- Already accepts onPageChange
   const { t } = useTranslation();
 
-  // --- 4. ADD STATE FOR THE MENU ---
-  const [anchorEl, setAnchorEl] = useState(null);
-  const isMenuOpen = Boolean(anchorEl);
+  // State for Profile Menu
+  const [profileAnchorEl, setProfileAnchorEl] = useState(null);
+  const isProfileMenuOpen = Boolean(profileAnchorEl);
 
+  // --- NEW: State for Notification Menu ---
+  const [notificationAnchorEl, setNotificationAnchorEl] = useState(null);
+  const isNotificationMenuOpen = Boolean(notificationAnchorEl);
+  const [unreadCount, setUnreadCount] = useState(0);
+  // ---------------------------------------
+
+  // --- NEW: Fetch initial count on load ---
+  useEffect(() => {
+    notificationService.getMyNotifications().then(data => {
+      setUnreadCount(data.unreadCount);
+    });
+
+    // Listen for socket events to update the badge in real-time
+    socketService.onNewNotification(() => {
+      // Just increment the count, no need to fetch all
+      setUnreadCount(prevCount => prevCount + 1);
+    });
+
+    return () => socketService.removeListeners();
+  }, []);
+  // --------------------------------------
+
+  // --- Profile Menu Handlers ---
   const handleProfileMenuOpen = (event) => {
-    setAnchorEl(event.currentTarget);
+    setProfileAnchorEl(event.currentTarget);
   };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
+  const handleProfileMenuClose = () => {
+    setProfileAnchorEl(null);
   };
-
   const handleLogout = () => {
-    handleMenuClose();
+    handleProfileMenuClose();
     authService.logout();
   };
-
   const handleProfile = () => {
-    handleMenuClose();
-    onPageChange('profile'); // <-- This will switch the page
+    handleProfileMenuClose();
+    onPageChange('profile');
+  };
+  // -----------------------------
+
+  // --- NEW: Notification Menu Handlers ---
+  const handleNotificationMenuOpen = (event) => {
+    setNotificationAnchorEl(event.currentTarget);
+  };
+  const handleNotificationMenuClose = () => {
+    setNotificationAnchorEl(null);
   };
   // ---------------------------------
 
@@ -47,26 +79,19 @@ const Header = ({ onPageChange }) => {
       }}
     >
       <Toolbar sx={{ justifyContent: 'space-between' }}>
-        {/* Left Side: Emblem and Title */}
+        {/* Left Side */}
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          {/* ... (Emblem and Title code remains the same) ... */}
           <Avatar
             src={EMBLEM_URL}
             alt="Emblem of India"
             sx={{ width: 40, height: 40, mr: 1.5 }}
           />
           <Box>
-            <Typography
-              variant="body2"
-              fontWeight="bold"
-              sx={{ lineHeight: 1.2, color: 'text.primary' }}
-            >
+            <Typography variant="body2" fontWeight="bold">
               GOVERNMENT OF INDIA
             </Typography>
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{ lineHeight: 1.2 }}
-            >
+            <Typography variant="body2" color="text.secondary">
               {t('login.title')} - {t('login.subtitle')}
             </Typography>
           </Box>
@@ -75,36 +100,42 @@ const Header = ({ onPageChange }) => {
         {/* Right Side: Icons */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
 
-          {/* This is the line we deleted */}
-
-          <IconButton color="inherit">
-            <NotificationsNone />
+          {/* --- UPDATED: Notification Button --- */}
+          <IconButton color="inherit" onClick={handleNotificationMenuOpen}>
+            <Badge badgeContent={unreadCount} color="error">
+              <NotificationsNone />
+            </Badge>
           </IconButton>
+          {/* ---------------------------------- */}
 
-          {/* --- 5. UPDATE THE PROFILE ICON BUTTON --- */}
-          <IconButton
-            color="inherit"
-            onClick={handleProfileMenuOpen} // <-- Make it open the menu
-          >
+          <IconButton color="inherit" onClick={handleProfileMenuOpen}>
             <AccountCircle />
           </IconButton>
-          {/* -------------------------------------- */}
         </Box>
       </Toolbar>
 
-      {/* --- 6. ADD THE MENU COMPONENT --- */}
+      {/* Profile Menu */}
       <Menu
-        anchorEl={anchorEl}
-        open={isMenuOpen}
-        onClose={handleMenuClose}
-        onClick={handleMenuClose}
+        anchorEl={profileAnchorEl}
+        open={isProfileMenuOpen}
+        onClose={handleProfileMenuClose}
+        onClick={handleProfileMenuClose}
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
         <MenuItem onClick={handleProfile}>Profile</MenuItem>
         <MenuItem onClick={handleLogout}>Logout</MenuItem>
       </Menu>
-      {/* ------------------------------- */}
+
+      {/* --- NEW: Notification Menu Component --- */}
+      <NotificationMenu
+        anchorEl={notificationAnchorEl}
+        open={isNotificationMenuOpen}
+        onClose={handleNotificationMenuClose}
+        onPageChange={onPageChange}
+        onUpdateCount={(count) => setUnreadCount(count)}
+      />
+      {/* -------------------------------------- */}
 
     </AppBar>
   );

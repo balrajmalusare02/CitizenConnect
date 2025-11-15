@@ -53,10 +53,10 @@ export const socketService = {
     }
   },
 
-  // Listen for analytics updates
-  onAnalyticsUpdate: (callback) => {
+  // Listen for new notifications
+  onNewNotification: (callback) => {
     if (socket) {
-      socket.off('analyticsUpdate', callback);
+      socket.on('new-notification', callback);
     }
   },
 
