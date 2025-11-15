@@ -82,10 +82,7 @@ setAreaData(transformedAreaData);
     // Listen for new complaints or updates to refresh analytics
     socketService.onNewComplaint(() => fetchData());
     socketService.onComplaintUpdate(() => fetchData());
-    socketService.onAnalyticsUpdate((newAnalytics) => {
-      console.log('Analytics updated:', newAnalytics);
-      setAnalytics(newAnalytics);
-    });
+    
 
     // Auto-refresh every 30 seconds as backup
     const interval = setInterval(fetchData, 30000); // 30 seconds

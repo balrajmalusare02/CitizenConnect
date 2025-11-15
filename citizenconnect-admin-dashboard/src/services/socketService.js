@@ -65,7 +65,7 @@ export const socketService = {
     if (socket) {
       socket.off('new-complaint');
       socket.off('complaint-status-updated');
-      socket.off('analyticsUpdate');
+      socket.off('new-notification');
     }
   },
 
