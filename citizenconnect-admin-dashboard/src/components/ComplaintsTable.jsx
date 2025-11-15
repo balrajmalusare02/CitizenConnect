@@ -14,7 +14,7 @@ import {
   Tooltip,
 } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
-import { Refresh, Phone, Email, LocationOn } from '@mui/icons-material';
+import { Refresh, Phone, Email, LocationOn, HowToReg } from '@mui/icons-material';
 import { complaintService } from '../services/complaintService';
 import AssignComplaintModal from './AssignComplaintModal';
 
