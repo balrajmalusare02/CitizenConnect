@@ -1,25 +1,48 @@
-import React from 'react';
-import { AppBar, Toolbar, Typography, Box, IconButton, Avatar } from '@mui/material';
+import React, { useState } from 'react'; // <-- 1. IMPORT useState
+import {
+  AppBar, Toolbar, Typography, Box, IconButton, Avatar,
+  Menu, MenuItem // <-- 2. IMPORT Menu and MenuItem
+} from '@mui/material';
 import { NotificationsNone, AccountCircle } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
+import { authService } from '../services/authService'; // <-- 3. IMPORT authService
 
-// --- Placeholders for Logos ---
-// You can get these from the MHA website or your assets
 const EMBLEM_URL = 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Emblem_of_India.svg/120px-Emblem_of_India.svg.png';
-const G20_LOGO_URL = 'https://upload.wikimedia.org/wikipedia/en/thumb/7/7b/G20_India_2023_logo.svg/120px-G20_India_2023_logo.svg.png';
-const YOGA_LOGO_URL = 'https://upload.wikimedia.org/wikipedia/en/thumb/a/a2/International_Day_of_Yoga_2021_logo.svg/100px-International_Day_of_Yoga_2021_logo.svg.png';
 
 const Header = () => {
   const { t } = useTranslation();
+
+  // --- 4. ADD STATE FOR THE MENU ---
+  const [anchorEl, setAnchorEl] = useState(null);
+  const isMenuOpen = Boolean(anchorEl);
+
+  const handleProfileMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleLogout = () => {
+    handleMenuClose();
+    authService.logout();
+  };
+
+  const handleProfile = () => {
+    handleMenuClose();
+    // TODO: We will make this navigate to a new profile page
+    alert('Profile page coming soon!'); 
+  };
+  // ---------------------------------
 
   return (
     <AppBar
       position="fixed"
       sx={{
-        // This makes the Header sit *above* the sidebar
         zIndex: (theme) => theme.zIndex.drawer + 1,
-        backgroundColor: 'background.paper', // White background
-        color: 'text.primary', // Dark text
+        backgroundColor: 'background.paper',
+        color: 'text.primary',
         boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
         borderBottom: (theme) => `1px solid ${theme.palette.divider}`,
       }}
@@ -50,22 +73,40 @@ const Header = () => {
           </Box>
         </Box>
 
-        {/* Right Side: Logos and User Icons */}
+        {/* Right Side: Icons */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          {/* Logos (hidden on small screens) */}
-          <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center', gap: 2 }}>
-            <img src={G20_LOGO_URL} alt="G20 Logo" height="30px" />
-            <img src={YOGA_LOGO_URL} alt="Yoga Logo" height="30px" />
-          </Box>
-          
+
+          {/* This is the line we deleted */}
+
           <IconButton color="inherit">
             <NotificationsNone />
           </IconButton>
-          <IconButton color="inherit">
+
+          {/* --- 5. UPDATE THE PROFILE ICON BUTTON --- */}
+          <IconButton
+            color="inherit"
+            onClick={handleProfileMenuOpen} // <-- Make it open the menu
+          >
             <AccountCircle />
           </IconButton>
+          {/* -------------------------------------- */}
         </Box>
       </Toolbar>
+
+      {/* --- 6. ADD THE MENU COMPONENT --- */}
+      <Menu
+        anchorEl={anchorEl}
+        open={isMenuOpen}
+        onClose={handleMenuClose}
+        onClick={handleMenuClose}
+        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+      >
+        <MenuItem onClick={handleProfile}>Profile</MenuItem>
+        <MenuItem onClick={handleLogout}>Logout</MenuItem>
+      </Menu>
+      {/* ------------------------------- */}
+
     </AppBar>
   );
 };
