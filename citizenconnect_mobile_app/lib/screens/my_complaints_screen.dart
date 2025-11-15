@@ -61,32 +61,56 @@ class _MyComplaintsScreenState extends State<MyComplaintsScreen> {
     }
 
     return ListView.builder(
+      padding: const EdgeInsets.all(8.0), // Add padding
       itemCount: complaints.length,
       itemBuilder: (context, index) {
         final complaint = complaints[index];
-        return Card(
-          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        return Card( // Use a Card
+          elevation: 3,
+          margin: const EdgeInsets.symmetric(vertical: 8.0),
           child: ListTile(
+            contentPadding: const EdgeInsets.all(16),
+            leading: Icon(_getStatusIcon(complaint.status), color: _getStatusColor(complaint.status)),
             title: Text(complaint.title, style: const TextStyle(fontWeight: FontWeight.bold)),
-            subtitle: Text(complaint.domain, overflow: TextOverflow.ellipsis),
-            trailing: Text(
-              complaint.status,
-              style: TextStyle(
-                color: _getStatusColor(complaint.status),
-                fontWeight: FontWeight.bold,
-              ),
+            subtitle: Text(
+              "${complaint.domain} - ${complaint.category}",
+              overflow: TextOverflow.ellipsis,
             ),
-            // We will add an onTap later to go to the detail page (Step 6.1.6)
+            trailing: Chip( // Use a Chip for status
+              label: Text(
+                complaint.status,
+                style: const TextStyle(color: Colors.white),
+              ),
+              backgroundColor: _getStatusColor(complaint.status),
+            ),
             onTap: () {
               Navigator.of(context).pushNamed(
                 '/complaint-detail',
-                arguments: complaint.id, // Pass the complaint ID as an argument
+                arguments: complaint.id,
               );
             },
           ),
         );
       },
     );
+  }
+
+  // --- NEW: Helper function for icons ---
+  IconData _getStatusIcon(String status) {
+    switch (status) {
+      case 'Raised':
+        return Icons.flag;
+      case 'Acknowledged':
+        return Icons.visibility;
+      case 'InProgress':
+        return Icons.sync;
+      case 'Resolved':
+        return Icons.check_circle;
+      case 'Closed':
+        return Icons.done_all;
+      default:
+        return Icons.help;
+    }
   }
 
   // Helper to give status a color
