@@ -48,6 +48,9 @@ dependencies:
 
   socket_io_client: ^2.0.3
   flutter_local_notifications: ^17.0.0
+
+  flutter_map: ^6.1.0
+  flutter_map_marker_popup: ^6.1.2
        
 
 

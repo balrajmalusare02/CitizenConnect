@@ -24,6 +24,7 @@ import analyticsRoutes from "./routes/analyticsRoutes";
 import archiveRoutes from "./routes/archiveRoutes";
 import heatmapRoutes from "./routes/heatmapRoutes";
 import dashboardRoutes from "./routes/dashboardRoutes";
+import userRoutes from "./routes/userRoutes";
 
 dotenv.config();
 const app = express();
@@ -74,6 +75,7 @@ app.use("/api/analytics", analyticsRoutes);
 app.use("/api/archive", archiveRoutes);
 app.use("/api/heatmap", heatmapRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/users", userRoutes);
 
 // ✅ Start server
 //const PORT = process.env.PORT || 4000;

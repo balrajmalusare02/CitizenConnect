@@ -6,6 +6,7 @@ import 'screens/raise_complaint_screen.dart'; // <-- ADD THIS IMPORT// <-- ADD T
 import 'screens/my_complaints_screen.dart';
 import 'screens/complaint_detail_screen.dart';
 import 'screens/notifications_screen.dart';
+import 'screens/public_heatmap_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -40,6 +41,8 @@ class MyApp extends StatelessWidget {
             return MaterialPageRoute(builder: (_) => const MyComplaintsScreen());
           case '/notifications':
             return MaterialPageRoute(builder: (_) => const NotificationsScreen());
+          case '/public-heatmap':
+            return MaterialPageRoute(builder: (_) => const PublicHeatmapScreen());
 
           // This is how we handle routes that need arguments
           case '/complaint-detail':
