@@ -23,7 +23,10 @@ interface AuthenticatedRequest extends Request {
 const prisma = new PrismaClient();
 
 // 📌 Assign Complaint to Employee
-export const assignComplaint = async (req: AuthenticatedRequest, res: Response) => {
+export const assignComplaint = async (
+  req: AuthenticatedRequest,
+  res: Response
+) => {
   try {
     const { id } = req.params;
     const { assignedToId, department } = req.body;
@@ -34,16 +37,18 @@ export const assignComplaint = async (req: AuthenticatedRequest, res: Response) 
     }
 
     // Only admins can assign complaints
-    if (!["CITY_ADMIN", "SUPER_ADMIN", "DEPARTMENT_ADMIN"].includes(admin.role)) {
-      return res.status(403).json({ 
-        message: "Access denied - Only admins can assign complaints" 
+    if (
+      !["CITY_ADMIN", "SUPER_ADMIN", "DEPARTMENT_ADMIN"].includes(admin.role)
+    ) {
+      return res.status(403).json({
+        message: "Access denied - Only admins can assign complaints",
       });
     }
 
     // Validate required fields
     if (!assignedToId) {
-      return res.status(400).json({ 
-        message: "assignedToId is required" 
+      return res.status(400).json({
+        message: "assignedToId is required",
       });
     }
 
@@ -60,7 +65,7 @@ export const assignComplaint = async (req: AuthenticatedRequest, res: Response) 
     // Check if assigned user exists
     const assignedUser = await prisma.user.findUnique({
       where: { id: parseInt(assignedToId) },
-      select: { id: true, name: true, email: true, department: true }
+      select: { id: true, name: true, email: true, department: true },
     });
 
     if (!assignedUser) {
@@ -70,8 +75,9 @@ export const assignComplaint = async (req: AuthenticatedRequest, res: Response) 
     // Department admins can only assign within their department
     if (admin.role === "DEPARTMENT_ADMIN") {
       if (assignedUser.department !== admin.department) {
-        return res.status(403).json({ 
-          message: "You can only assign complaints to employees in your department" 
+        return res.status(403).json({
+          message:
+            "You can only assign complaints to employees in your department",
         });
       }
     }
@@ -83,18 +89,23 @@ export const assignComplaint = async (req: AuthenticatedRequest, res: Response) 
         assignedTo: { connect: { id: parseInt(assignedToId) } },
         assignedBy: { connect: { id: admin.id } },
         assignedAt: new Date(),
-        department: department || assignedUser.department || complaint.department,
-        status: complaint.status === "Raised" ? "Acknowledged" : complaint.status,
+        department:
+          department || assignedUser.department || complaint.department,
+        status:
+          complaint.status === "Raised" ? "Acknowledged" : complaint.status,
         statusUpdates: {
           create: {
-            status: complaint.status === "Raised" ? "Acknowledged" : complaint.status,
+            status:
+              complaint.status === "Raised" ? "Acknowledged" : complaint.status,
             remarks: `Assigned to ${assignedUser.name} by ${admin.name}`,
           },
         },
       },
       include: {
         user: { select: { id: true, name: true, email: true } },
-        assignedTo: { select: { id: true, name: true, email: true, department: true } },
+        assignedTo: {
+          select: { id: true, name: true, email: true, department: true },
+        },
         assignedBy: { select: { id: true, name: true, email: true } },
         statusUpdates: true,
       },
@@ -129,7 +140,10 @@ export const assignComplaint = async (req: AuthenticatedRequest, res: Response) 
 };
 
 // 📋 Get Complaints Assigned to Current User
-export const getMyAssignedComplaints = async (req: AuthenticatedRequest, res: Response) => {
+export const getMyAssignedComplaints = async (
+  req: AuthenticatedRequest,
+  res: Response
+) => {
   try {
     const user = req.user;
 
@@ -154,12 +168,17 @@ export const getMyAssignedComplaints = async (req: AuthenticatedRequest, res: Re
     });
   } catch (error) {
     console.error("Error fetching assigned complaints:", error);
-    return res.status(500).json({ message: "Failed to fetch assigned complaints" });
+    return res
+      .status(500)
+      .json({ message: "Failed to fetch assigned complaints" });
   }
 };
 
 // 🔄 Reassign Complaint to Another Employee
-export const reassignComplaint = async (req: AuthenticatedRequest, res: Response) => {
+export const reassignComplaint = async (
+  req: AuthenticatedRequest,
+  res: Response
+) => {
   try {
     const { id } = req.params;
     const { newAssignedToId } = req.body;
@@ -170,9 +189,11 @@ export const reassignComplaint = async (req: AuthenticatedRequest, res: Response
     }
 
     // Only admins can reassign
-    if (!["CITY_ADMIN", "SUPER_ADMIN", "DEPARTMENT_ADMIN"].includes(admin.role)) {
-      return res.status(403).json({ 
-        message: "Access denied - Only admins can reassign complaints" 
+    if (
+      !["CITY_ADMIN", "SUPER_ADMIN", "DEPARTMENT_ADMIN"].includes(admin.role)
+    ) {
+      return res.status(403).json({
+        message: "Access denied - Only admins can reassign complaints",
       });
     }
 
@@ -211,13 +232,17 @@ export const reassignComplaint = async (req: AuthenticatedRequest, res: Response
         statusUpdates: {
           create: {
             status: complaint.status,
-            remarks: `Reassigned from ${oldAssignedTo?.name || "unassigned"} to ${newAssignedUser.name}`,
+            remarks: `Reassigned from ${
+              oldAssignedTo?.name || "unassigned"
+            } to ${newAssignedUser.name}`,
           },
         },
       },
       include: {
         user: { select: { id: true, name: true, email: true } },
-        assignedTo: { select: { id: true, name: true, email: true, department: true } },
+        assignedTo: {
+          select: { id: true, name: true, email: true, department: true },
+        },
         assignedBy: { select: { id: true, name: true, email: true } },
         statusUpdates: true,
       },
@@ -253,7 +278,10 @@ export const reassignComplaint = async (req: AuthenticatedRequest, res: Response
 };
 
 // ❌ Unassign Complaint
-export const unassignComplaint = async (req: AuthenticatedRequest, res: Response) => {
+export const unassignComplaint = async (
+  req: AuthenticatedRequest,
+  res: Response
+) => {
   try {
     const { id } = req.params;
     const admin = req.user;
@@ -263,9 +291,11 @@ export const unassignComplaint = async (req: AuthenticatedRequest, res: Response
     }
 
     // Only admins can unassign
-    if (!["CITY_ADMIN", "SUPER_ADMIN", "DEPARTMENT_ADMIN"].includes(admin.role)) {
-      return res.status(403).json({ 
-        message: "Access denied - Only admins can unassign complaints" 
+    if (
+      !["CITY_ADMIN", "SUPER_ADMIN", "DEPARTMENT_ADMIN"].includes(admin.role)
+    ) {
+      return res.status(403).json({
+        message: "Access denied - Only admins can unassign complaints",
       });
     }
 
@@ -319,5 +349,33 @@ export const unassignComplaint = async (req: AuthenticatedRequest, res: Response
   } catch (error) {
     console.error("Error unassigning complaint:", error);
     return res.status(500).json({ message: "Failed to unassign complaint" });
+  }
+};
+
+// @desc    Get all employees for assignment dropdowns
+// @route   GET /api/assignments/employees
+// @access  Private (Admins)
+export const getAssignableEmployees = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const employees = await prisma.user.findMany({
+      where: {
+        role: {
+          in: ["DEPARTMENT_EMPLOYEE", "DEPARTMENT_ADMIN", "WARD_OFFICER"],
+        },
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        department: true,
+        role: true,
+      },
+      orderBy: { department: 'asc' },
+    });
+
+    res.status(200).json({ success: true, employees });
+  } catch (error) {
+    console.error("Error fetching assignable employees:", error);
+    res.status(500).json({ message: "Failed to fetch employees" });
   }
 };
