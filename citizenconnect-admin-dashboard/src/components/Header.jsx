@@ -9,7 +9,7 @@ import { authService } from '../services/authService'; // <-- 3. IMPORT authServ
 
 const EMBLEM_URL = 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Emblem_of_India.svg/120px-Emblem_of_India.svg.png';
 
-const Header = () => {
+const Header = ({ onPageChange }) => {
   const { t } = useTranslation();
 
   // --- 4. ADD STATE FOR THE MENU ---
@@ -31,8 +31,7 @@ const Header = () => {
 
   const handleProfile = () => {
     handleMenuClose();
-    // TODO: We will make this navigate to a new profile page
-    alert('Profile page coming soon!'); 
+    onPageChange('profile'); // <-- This will switch the page
   };
   // ---------------------------------
 

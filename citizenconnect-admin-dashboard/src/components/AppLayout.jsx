@@ -10,6 +10,7 @@ import EmployeeDashboard from '../pages/EmployeeDashboard';
 import WardOfficerDashboard from '../pages/WardOfficerDashboard';
 import DeptAdminDashboard from '../pages/DeptAdminDashboard';
 import Heatmap from '../pages/Heatmap';
+import Profile from '../pages/Profile';
 
 const AppLayout = ({ userRole }) => {
   const [currentPage, setCurrentPage] = useState('dashboard');
@@ -51,6 +52,8 @@ const AppLayout = ({ userRole }) => {
       return <Analytics />;
     case 'heatmap':
       return <Heatmap />;
+    case 'profile':
+      return <Profile />;
     default:
       return <Dashboard onPageChange={handlePageChange} />;
   }
@@ -59,7 +62,7 @@ const AppLayout = ({ userRole }) => {
   return (
     <Box sx={{ display: 'flex' }}>
       {/* Header is now added */}
-      <Header />
+      <Header onPageChange={handlePageChange} />
       
       <Sidebar currentPage={currentPage} onPageChange={handlePageChange} userRole={userRole} />
       
