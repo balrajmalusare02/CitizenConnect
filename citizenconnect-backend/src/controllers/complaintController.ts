@@ -184,6 +184,24 @@ export const raiseComplaint = async (req: AuthenticatedRequest, res: Response) =
       timestamp: new Date(),
     });
 
+    // Find all admins to create a notification for them
+    const admins = await prisma.user.findMany({
+      where: {
+        role: { in: ["CITY_ADMIN", "SUPER_ADMIN"] }
+      },
+      select: { id: true }
+    });
+
+    // Create a notification for each admin
+    for (const admin of admins) {
+      await createAndEmitNotification(
+        admin.id,
+        `New complaint #${complaint.id} ("${complaint.title}") raised by a citizen.`,
+        complaint.id,
+        "new-notification" // This will also send the socket alert
+      );
+    }
+
     // ✅ If auto-assigned, notify the employee
     if (autoAssignedEmployeeId) {
       io.to(`user:${autoAssignedEmployeeId}`).emit("complaint-assigned", {
