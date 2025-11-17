@@ -29,27 +29,7 @@ import userRoutes from "./routes/userRoutes";
 dotenv.config();
 const app = express();
 
-// Define an explicit whitelist of allowed origins
-const whitelist = [
-  //process.env.CORS_ORIGIN, // Your Render Environment Variable (just in case)
-  "https://citizenconnect-admin-dashboard.vercel.app", // The Vercel frontend
-  "http://localhost:5173", // Your local development environment
-];
-
-const corsOptions = {
-  origin: function (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) {
-    // Check if the incoming origin is in our whitelist OR if it's not a browser (e.g., Postman)
-    if (whitelist.indexOf(origin) !== -1 || !origin) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-  methods: ["GET", "POST", "PUT", "DELETE", "PATCH"], // Allow all standard methods
-  credentials: true,
-};
-
-app.use(cors(corsOptions));
+app.use(cors());
 app.use(express.json());
 app.use(logger);
 
@@ -62,7 +42,10 @@ app.get("/", (req, res) => {
 const server = http.createServer(app);
 
 export const io = new Server(server, {
-  cors: corsOptions,
+  cors: {
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST"],
+  },
 });
 
 // ✅ Apply Socket.IO authentication middleware
