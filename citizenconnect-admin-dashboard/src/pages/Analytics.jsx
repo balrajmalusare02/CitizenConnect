@@ -38,6 +38,7 @@ import {
   Filler,
 } from "chart.js";
 import { motion } from "framer-motion";
+import { complaintService } from "../services/complaintService";
 
 ChartJS.register(
   CategoryScale,
@@ -59,6 +60,7 @@ const Analytics = () => {
   const [timeFilter, setTimeFilter] = useState("monthly");
   const [areaFilter, setAreaFilter] = useState("all");
   const [departmentFilter, setDepartmentFilter] = useState("all");
+  const [error, setError] = useState("");
 
   // Sample data - Replace with actual API calls
   const [statistics, setStatistics] = useState(null);
@@ -356,6 +358,12 @@ const Analytics = () => {
           )}
         </Box>
       </Card>
+
+      {error && (
+        <Alert severity="error" sx={{ mb: 3 }}>
+          {error}
+        </Alert>
+      )}
 
       {/* Key Statistics Cards */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
