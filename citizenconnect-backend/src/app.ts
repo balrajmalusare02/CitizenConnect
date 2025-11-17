@@ -31,7 +31,7 @@ const app = express();
 
 // Define an explicit whitelist of allowed origins
 const whitelist = [
-  process.env.CORS_ORIGIN, // Your Render Environment Variable (just in case)
+  //process.env.CORS_ORIGIN, // Your Render Environment Variable (just in case)
   "https://citizenconnect-admin-dashboard.vercel.app", // The Vercel frontend
   "http://localhost:5173", // Your local development environment
 ];
