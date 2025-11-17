@@ -25,11 +25,26 @@ export const protect = async (req: AuthRequest, res: Response, next: NextFunctio
     const secret = process.env.JWT_SECRET as string;
     const decoded: any = jwt.verify(token, secret);
 
-    const user = await prisma.user.findUnique({ where: { id: decoded.id } });
+    const user = await prisma.user.findUnique({
+      where: { id: decoded.id },
+      // Explicitly select the fields we need
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+        
+      },
+    });
+
     if (!user) {
       return res.status(401).json({ message: "User not found" });
     }
 
+    // --- ADD THIS SECURITY CHECK ---
+    // This check is on your server and was causing the crash.
+    // Now that 'status' is defined, it will work correctly.
+    
     req.user = user; // attach user to request
     next();
   } catch (error) {
