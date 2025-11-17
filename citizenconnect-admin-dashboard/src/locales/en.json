@@ -53,8 +53,11 @@
     "dashboard": "Dashboard",
     "complaints": "All Complaints",
     "analytics": "Analytics",
-    "logout": "Logout"
+    "logout": "Logout",
+    "heatmap": "Heatmap",
+    "feedback": "Feedback" 
   },
+  
   "status": {
     "pending": "Pending",
     "underReview": "Under Review",

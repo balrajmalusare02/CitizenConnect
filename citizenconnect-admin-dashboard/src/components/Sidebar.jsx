@@ -24,6 +24,7 @@ import {
   Person,
   Language,
   Map,
+  Feedback,
 } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { authService } from '../services/authService';
@@ -45,6 +46,7 @@ const Sidebar = ({ currentPage, onPageChange, userRole }) => {
 if (userRole !== 'DEPARTMENT_EMPLOYEE') {
   menuItems.push({ text: t('sidebar.analytics'), icon: <Assessment />, page: 'analytics' });
   menuItems.push({ text: 'Heatmap', icon: <Map />, page: 'heatmap' });
+  menuItems.push({ text: t('sidebar.feedback'), icon: <Feedback />, page: 'feedback' });
 }
 
 // For employees, "Dashboard" is their only page.

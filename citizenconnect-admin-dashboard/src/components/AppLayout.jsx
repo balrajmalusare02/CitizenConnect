@@ -11,6 +11,7 @@ import WardOfficerDashboard from '../pages/WardOfficerDashboard';
 import DeptAdminDashboard from '../pages/DeptAdminDashboard';
 import Heatmap from '../pages/Heatmap';
 import Profile from '../pages/Profile';
+import Feedback from '../pages/Feedback';
 
 const AppLayout = ({ userRole }) => {
   const [currentPage, setCurrentPage] = useState('dashboard');
@@ -57,14 +58,7 @@ const AppLayout = ({ userRole }) => {
     case 'profile':
       return <Profile />;
     case 'feedback':
-        return (
-          <Box>
-            <Typography variant="h4">Feedbacks</Typography>
-            <Typography>
-              This page will show all user feedbacks. (To be built)
-            </Typography>
-          </Box>
-        );
+        return (<Feedback />);
     default:
       return <Dashboard onPageChange={handlePageChange} />;
   }
