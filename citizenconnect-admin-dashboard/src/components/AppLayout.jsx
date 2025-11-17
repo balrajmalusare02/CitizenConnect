@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Toolbar, Container } from '@mui/material';
+import { Box, Toolbar, Container, Typography } from '@mui/material';
 import Sidebar from './Sidebar';
 import Header from './Header'; // Import Header
 import Footer from './Footer'; // Import Footer
@@ -14,9 +14,11 @@ import Profile from '../pages/Profile';
 
 const AppLayout = ({ userRole }) => {
   const [currentPage, setCurrentPage] = useState('dashboard');
+  const [initialFilter, setInitialFilter] = useState(null);
 
-  const handlePageChange = (page) => {
+  const handlePageChange = (page, filter = null) => {
     setCurrentPage(page);
+    setInitialFilter(filter);
   };
 
   const renderPage = () => {
@@ -47,13 +49,22 @@ const AppLayout = ({ userRole }) => {
     case 'dashboard':
       return <Dashboard onPageChange={handlePageChange} />;
     case 'complaints':
-      return <Complaints />;
+      return <Complaints initialFilter = {initialFilter}/>;
     case 'analytics':
       return <Analytics />;
     case 'heatmap':
       return <Heatmap />;
     case 'profile':
       return <Profile />;
+    case 'feedback':
+        return (
+          <Box>
+            <Typography variant="h4">Feedbacks</Typography>
+            <Typography>
+              This page will show all user feedbacks. (To be built)
+            </Typography>
+          </Box>
+        );
     default:
       return <Dashboard onPageChange={handlePageChange} />;
   }

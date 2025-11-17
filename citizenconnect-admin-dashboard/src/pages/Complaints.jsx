@@ -11,7 +11,7 @@ import ComplaintsTable from '../components/ComplaintsTable'; // Import the table
 import { complaintService } from '../services/complaintService';
 import { socketService } from '../services/socketService';
 
-const Complaints = () => {
+const Complaints = ({ initialFilter }) => {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -130,6 +130,7 @@ const Complaints = () => {
         complaints={complaints}
         onRefresh={handleRefresh}
         onStatusUpdate={handleRefresh} // Refresh data on status update
+        initialFilter={initialFilter} // Pass the initial
       />
     </Container>
   );

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import {
   Card,
@@ -19,7 +19,7 @@ import { complaintService } from '../services/complaintService';
 import AssignComplaintModal from './AssignComplaintModal';
 import ComplaintDetailModal from './ComplaintDetailModal';
 
-const ComplaintsTable = ({ complaints, onRefresh, onStatusUpdate, hideColumns = [] }) => {
+const ComplaintsTable = ({ complaints, onRefresh, onStatusUpdate, hideColumns = [], initialFilter }) => {
   const [filterStatus, setFilterStatus] = useState('all');
   const [searchText, setSearchText] = useState('');
 
@@ -49,6 +49,14 @@ const ComplaintsTable = ({ complaints, onRefresh, onStatusUpdate, hideColumns = 
     setDetailModalOpen(false);
     setDetailComplaintId(null);
   };
+
+  useEffect(() => {
+    if (initialFilter) {
+      setFilterStatus(initialFilter);
+    }
+  }, [initialFilter]);
+
+  
 
   // Handle status change
   const handleStatusChange = async (complaintId, newStatus) => {
@@ -214,8 +222,23 @@ const ComplaintsTable = ({ complaints, onRefresh, onStatusUpdate, hideColumns = 
 
   // Filter complaints
   const filteredComplaints = complaints?.filter((complaint) => {
-    const matchesStatus =
-      filterStatus === 'all' || complaint.status?.toLowerCase() === filterStatus;
+    const complaintStatus = complaint.status?.toLowerCase(); // e.g., 'raised', 'inprogress'
+    const filter = filterStatus; // e.g., 'all', 'pending', 'under review'
+
+    let matchesStatus = false;
+    if (filter === 'all') {
+      matchesStatus = true;
+    } else if (filter === 'pending') {
+      // 'pending' filter should catch 'Raised' OR 'Acknowledged'
+      matchesStatus = (complaintStatus === 'raised' || complaintStatus === 'acknowledged');
+    } else if (filter === 'under review') {
+      // 'under review' filter should catch 'InProgress'
+      matchesStatus = (complaintStatus === 'inprogress');
+    } else {
+      // For all others ('resolved', 'closed', 'under resolving'),
+      // we assume a direct match is correct.
+      matchesStatus = (complaintStatus === filter);
+    }
     const matchesSearch =
       searchText === '' ||
       complaint.complainerName?.toLowerCase().includes(searchText.toLowerCase()) ||
@@ -223,6 +246,7 @@ const ComplaintsTable = ({ complaints, onRefresh, onStatusUpdate, hideColumns = 
       complaint.email?.toLowerCase().includes(searchText.toLowerCase()) ||
       complaint.area?.toLowerCase().includes(searchText.toLowerCase()) ||
       complaint.department?.toLowerCase().includes(searchText.toLowerCase());
+      
     return matchesStatus && matchesSearch;
   });
 

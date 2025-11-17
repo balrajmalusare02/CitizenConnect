@@ -22,6 +22,7 @@ const AnalyticsCards = ({ analytics, onPageChange }) => {
       color: '#3f51b5', // Use theme primary color
       bgColor: 'rgba(63, 81, 181, 0.1)',
       page: 'complaints', // Page to navigate to
+      filterKey: 'all',
     },
     {
       title: t('dashboard.resolved'),
@@ -30,6 +31,7 @@ const AnalyticsCards = ({ analytics, onPageChange }) => {
       color: '#4caf50',
       bgColor: '#e8f5e9',
       page: 'complaints', // Page to navigate to
+      filterKey: 'resolved',
     },
     {
       title: t('dashboard.underReview'),
@@ -38,6 +40,7 @@ const AnalyticsCards = ({ analytics, onPageChange }) => {
       color: '#ff9800',
       bgColor: '#fff3e0',
       page: 'complaints', // Page to navigate to
+      filterKey: 'under review',
     },
     {
       title: t('dashboard.pending'),
@@ -46,6 +49,7 @@ const AnalyticsCards = ({ analytics, onPageChange }) => {
       color: '#f44336',
       bgColor: '#ffebee',
       page: 'complaints', // Page to navigate to
+      filterKey: 'pending',
     },
     {
       title: t('dashboard.closed'),
@@ -54,6 +58,7 @@ const AnalyticsCards = ({ analytics, onPageChange }) => {
       color: '#9e9e9e',
       bgColor: '#f5f5f5',
       page: 'complaints', // Page to navigate to
+      filterKey: 'closed',
     },
     {
       title: t('dashboard.feedback'),
@@ -61,14 +66,16 @@ const AnalyticsCards = ({ analytics, onPageChange }) => {
       icon: <Feedback sx={{ fontSize: 40 }} />,
       color: '#2196f3',
       bgColor: '#e3f2fd',
-      page: 'analytics', // Page to navigate to
+      page: 'feedback', // Page to navigate to
+      filterKey: null,
     },
   ];
 
   // Handle click, calling the function from AppLayout
-  const handleCardClick = (page) => {
-    if (onPageChange && page) {
-      onPageChange(page);
+  const handleCardClick = (page, filterKey) => {
+    if (page) {
+      // Pass both the page and the filter key
+      onPageChange(page, filterKey); 
     }
   };
 
@@ -77,7 +84,7 @@ const AnalyticsCards = ({ analytics, onPageChange }) => {
       {cards.map((card, index) => (
         <Grid item xs={12} sm={6} md={4} lg={2} key={index}>
           <Card
-            onClick={() => handleCardClick(card.page)}
+            onClick={() => handleCardClick(card.page, card.filterKey)} // <-- Handle click
             sx={{
               height: '100%',
               boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
