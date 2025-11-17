@@ -15,7 +15,7 @@ const columns = [
   {
     field: 'complaintId',
     headerName: 'Complaint ID',
-    width: 120,
+    width: 150,
     renderCell: (params) => (
       // This just reads the ID number, which is safe
       <Typography variant="body2" sx={{ textDecoration: 'underline', cursor: 'pointer' }}>
@@ -26,7 +26,7 @@ const columns = [
   {
     field: 'userId',
     headerName: 'User ID', // We can't get the name right now, but we can show the ID
-    width: 120,
+    width: 150,
     renderCell: (params) => (
       // This just reads the ID number, which is safe
       <Typography variant="body2">
