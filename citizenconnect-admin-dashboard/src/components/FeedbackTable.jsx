@@ -16,19 +16,23 @@ const columns = [
     field: 'complaintId',
     headerName: 'Complaint ID',
     width: 120,
-    valueGetter: (params) => params.row?.complaint?.id,
     renderCell: (params) => (
-      // We can make this clickable later to open the complaint modal
+      // This just reads the ID number, which is safe
       <Typography variant="body2" sx={{ textDecoration: 'underline', cursor: 'pointer' }}>
         #{params.value}
       </Typography>
     ),
   },
   {
-    field: 'user',
-    headerName: 'User',
-    width: 200,
-    valueGetter: (params) => params.row?.user?.name,
+    field: 'userId',
+    headerName: 'User ID', // We can't get the name right now, but we can show the ID
+    width: 120,
+    renderCell: (params) => (
+      // This just reads the ID number, which is safe
+      <Typography variant="body2">
+        User #{params.value}
+      </Typography>
+    ),
   },
   {
     field: 'rating',
