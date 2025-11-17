@@ -16,7 +16,7 @@ const columns = [
     field: 'complaintId',
     headerName: 'Complaint ID',
     width: 120,
-    valueGetter: (params) => params.row.complaint?.id,
+    valueGetter: (params) => params.row?.complaint?.id,
     renderCell: (params) => (
       // We can make this clickable later to open the complaint modal
       <Typography variant="body2" sx={{ textDecoration: 'underline', cursor: 'pointer' }}>
@@ -58,7 +58,7 @@ const FeedbackTable = ({ feedbacks }) => {
           <DataGrid
             rows={feedbacks}
             columns={columns}
-            getRowId={(row) => row.id} // Tell DataGrid to use 'id' as the unique key
+            getRowId={(row) => row?.id} // Tell DataGrid to use 'id' as the unique key
             pageSize={10}
             rowsPerPageOptions={[10, 25, 50]}
             disableSelectionOnClick
