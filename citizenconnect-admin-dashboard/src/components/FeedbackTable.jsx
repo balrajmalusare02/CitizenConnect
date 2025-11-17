@@ -28,7 +28,7 @@ const columns = [
     field: 'user',
     headerName: 'User',
     width: 200,
-    valueGetter: (params) => params.row.user?.name,
+    valueGetter: (params) => params.row?.user?.name,
   },
   {
     field: 'rating',
