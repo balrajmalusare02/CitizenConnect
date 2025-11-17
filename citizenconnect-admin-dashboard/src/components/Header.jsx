@@ -13,7 +13,7 @@ import NotificationMenu from './NotificationMenu'; // <-- IMPORT our new menu
 const EMBLEM_URL = 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Emblem_of_India.svg/120px-Emblem_of_India.svg.png';
 
 const Header = ({ onPageChange }) => { // <-- Already accepts onPageChange
-  const { t } = useTranslation();
+  const { t, i18n} = useTranslation();
 
   // State for Profile Menu
   const [profileAnchorEl, setProfileAnchorEl] = useState(null);
