@@ -254,13 +254,10 @@ export const getAverageRatings = async (req: Request, res: Response) => {
 
     // Get all feedback
     const feedbacks = await prisma.feedback.findMany({
-      where: whereClause,
-      include: {
-        complaint: {
-          select: { department: true, domain: true, category: true },
-        },
+      orderBy: {
+        createdAt: "desc", // Show newest first
       },
-    });
+      });
 
     if (feedbacks.length === 0) {
       return res.status(200).json({
