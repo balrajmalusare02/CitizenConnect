@@ -42,6 +42,7 @@ const Complaints = () => {
        feedback: c.feedbacks?.rating ? `${c.feedbacks.rating} stars` : 'No feedback',
        createdAt: c.createdAt,
        assignedToId: c.assignedToId,
+       assignedToName: c.assignedTo?.name || null,
      }));
  
      setComplaints(formattedComplaints);

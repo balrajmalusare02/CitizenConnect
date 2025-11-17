@@ -17,6 +17,7 @@ import { DataGrid } from '@mui/x-data-grid';
 import { Refresh, Phone, Email, LocationOn, HowToReg } from '@mui/icons-material';
 import { complaintService } from '../services/complaintService';
 import AssignComplaintModal from './AssignComplaintModal';
+import ComplaintDetailModal from './ComplaintDetailModal';
 
 const ComplaintsTable = ({ complaints, onRefresh, onStatusUpdate }) => {
   const [filterStatus, setFilterStatus] = useState('all');
@@ -24,6 +25,10 @@ const ComplaintsTable = ({ complaints, onRefresh, onStatusUpdate }) => {
 
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedComplaintId, setSelectedComplaintId] = useState(null);
+
+  const [detailModalOpen, setDetailModalOpen] = useState(false);
+  const [detailComplaintId, setDetailComplaintId] = useState(null);
+  
 
   const handleOpenAssignModal = (id) => {
     setSelectedComplaintId(id);
@@ -33,6 +38,16 @@ const ComplaintsTable = ({ complaints, onRefresh, onStatusUpdate }) => {
   const handleCloseAssignModal = () => {
     setModalOpen(false);
     setSelectedComplaintId(null);
+  };
+
+  const handleOpenDetailModal = (id) => {
+    setDetailComplaintId(id);
+    setDetailModalOpen(true);
+  };
+
+  const handleCloseDetailModal = () => {
+    setDetailModalOpen(false);
+    setDetailComplaintId(null);
   };
 
   // Handle status change
@@ -108,6 +123,19 @@ const ComplaintsTable = ({ complaints, onRefresh, onStatusUpdate }) => {
       width: 130,
       headerClassName: 'table-header',
     },
+
+    {
+      field: 'assignedToName',
+      headerName: 'Assigned To',
+      width: 150,
+      headerClassName: 'table-header',
+      renderCell: (params) => (
+        <Typography variant="body2" noWrap>
+          {params.value || 'Unassigned'}
+        </Typography>
+      ),
+    },
+
     {
       field: 'status',
       headerName: 'Status',
@@ -157,14 +185,27 @@ const ComplaintsTable = ({ complaints, onRefresh, onStatusUpdate }) => {
       // Only show assign button if not already assigned
       if (!params.row.assignedToId) { 
         return (
+          <Box>
           <Tooltip title="Assign Complaint">
             <IconButton
               color="primary"
               onClick={() => handleOpenAssignModal(params.row.id)}
             >
+              <Info />
+            </IconButton>
+          </Tooltip>
+          {/* Only show assign button if not already assigned */}
+          {!params.row.assignedToId && ( 
+            <Tooltip title="Assign Complaint">
+              <IconButton
+                color="primary"
+                onClick={() => handleOpenAssignModal(params.row.id)}
+              >
               <HowToReg />
             </IconButton>
           </Tooltip>
+        )}
+        </Box>
         );
       }
       return <Typography variant="caption">Assigned</Typography>;
@@ -259,6 +300,12 @@ const ComplaintsTable = ({ complaints, onRefresh, onStatusUpdate }) => {
               onRefresh(); // Refresh the whole table
             }}
           />
+
+      <ComplaintDetailModal
+        open={detailModalOpen}
+        onClose={handleCloseDetailModal}
+        complaintId={detailComplaintId}
+      />
     </Card>
   );
 };
