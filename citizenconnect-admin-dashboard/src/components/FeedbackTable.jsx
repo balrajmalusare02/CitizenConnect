@@ -12,7 +12,24 @@ const columns = [
     width: 180,
     renderCell: (params) => new Date(params.value).toLocaleString('en-IN'),
   },
-  
+  {
+    field: 'complaintId',
+    headerName: 'Complaint ID',
+    width: 120,
+    valueGetter: (params) => params.row?.complaint?.id,
+    renderCell: (params) => (
+      // We can make this clickable later to open the complaint modal
+      <Typography variant="body2" sx={{ textDecoration: 'underline', cursor: 'pointer' }}>
+        #{params.value}
+      </Typography>
+    ),
+  },
+  {
+    field: 'user',
+    headerName: 'User',
+    width: 200,
+    valueGetter: (params) => params.row?.user?.name,
+  },
   {
     field: 'rating',
     headerName: 'Rating',
