@@ -425,6 +425,7 @@ export const getComplaintsByRole = async (req: any, res: Response) => {
         user: { select: { id: true, name: true, email: true } },
         statusUpdates: true,
         feedbacks: true,
+        assignedTo: { select: { id: true, name: true } }
       },
       orderBy: { createdAt: "desc" },
     });
