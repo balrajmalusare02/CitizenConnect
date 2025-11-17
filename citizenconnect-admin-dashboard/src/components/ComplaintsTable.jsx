@@ -182,32 +182,29 @@ const ComplaintsTable = ({ complaints, onRefresh, onStatusUpdate }) => {
     width: 120,
     headerClassName: 'table-header',
     renderCell: (params) => {
-      // Only show assign button if not already assigned
-      if (!params.row.assignedToId) { 
-        return (
-          <Box>
-          <Tooltip title="Assign Complaint">
+      return (
+        <Box>
+          <Tooltip title="View Details">
             <IconButton
-              color="primary"
-              onClick={() => handleOpenAssignModal(params.row.id)}
+              color="default"
+              onClick={() => handleOpenDetailModal(params.row.id)}
             >
               <Info />
             </IconButton>
           </Tooltip>
-          {/* Only show assign button if not already assigned */}
-          {!params.row.assignedToId && ( 
+          {/* Only show assign button if unassigned AND not resolved/closed */}
+          {!params.row.assignedToId && params.row.status !== 'Resolved' && params.row.status !== 'Closed' && ( 
             <Tooltip title="Assign Complaint">
               <IconButton
                 color="primary"
                 onClick={() => handleOpenAssignModal(params.row.id)}
               >
-              <HowToReg />
-            </IconButton>
-          </Tooltip>
-        )}
+                <HowToReg />
+              </IconButton>
+            </Tooltip>
+          )}
         </Box>
-        );
-      }
+      );
       return <Typography variant="caption">Assigned</Typography>;
     },
   }
