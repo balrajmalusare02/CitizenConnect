@@ -34,7 +34,7 @@ const EmployeeDashboard = () => {
         id: c.id,
         complainerName: c.user?.name,
         email: c.user?.email,
-        area: c.location,
+        location: c.location,
         department: c.department || 'N/A',
         status: c.status,
         feedback: c.feedbacks?.rating ? `${c.feedbacks.rating} stars` : 'No feedback',
@@ -131,6 +131,7 @@ const EmployeeDashboard = () => {
         complaints={data.complaints}
         onRefresh={fetchData}
         onStatusUpdate={fetchData}
+        hideColumns={['assignedToName']}
       />
     </Container>
   );

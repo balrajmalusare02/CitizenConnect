@@ -19,7 +19,7 @@ import { complaintService } from '../services/complaintService';
 import AssignComplaintModal from './AssignComplaintModal';
 import ComplaintDetailModal from './ComplaintDetailModal';
 
-const ComplaintsTable = ({ complaints, onRefresh, onStatusUpdate }) => {
+const ComplaintsTable = ({ complaints, onRefresh, onStatusUpdate, hideColumns = [] }) => {
   const [filterStatus, setFilterStatus] = useState('all');
   const [searchText, setSearchText] = useState('');
 
@@ -210,6 +210,8 @@ const ComplaintsTable = ({ complaints, onRefresh, onStatusUpdate }) => {
   }
   ];
 
+  const filteredColumns = columns.filter(col => !hideColumns.includes(col.field));
+
   // Filter complaints
   const filteredComplaints = complaints?.filter((complaint) => {
     const matchesStatus =
@@ -270,7 +272,7 @@ const ComplaintsTable = ({ complaints, onRefresh, onStatusUpdate }) => {
         <Box sx={{ height: 600, width: '100%' }}>
           <DataGrid
             rows={filteredComplaints || []}
-            columns={columns}
+            columns={filteredColumns}
             pageSize={10}
             rowsPerPageOptions={[10, 25, 50, 100]}
             disableSelectionOnClick
