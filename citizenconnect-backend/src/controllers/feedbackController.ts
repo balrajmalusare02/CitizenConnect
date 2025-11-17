@@ -5,6 +5,7 @@
  */
 
 import { Request, Response } from "express";
+
 import { PrismaClient } from "@prisma/client";
 import { io } from "../app";
 
@@ -339,5 +340,41 @@ export const getTopRatedDepartments = async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Error fetching top rated departments:", error);
     return res.status(500).json({ message: "Failed to fetch department ratings" });
+  }
+};
+
+// 🏆 Get All Feedbacks (For Admin Panel)
+export const getAllFeedbacks = async (
+  req: AuthenticatedRequest,
+  res: Response
+) => {
+  try {
+    // We can add a role check here in the future if needed
+    // if (req.user?.role !== 'SUPER_ADMIN' && req.user?.role !== 'CITY_ADMIN') {
+    //   return res.status(403).json({ message: "Forbidden" });
+    // }
+
+    const feedbacks = await prisma.feedback.findMany({
+      include: {
+        user: {
+          select: { name: true, email: true }, // Get user's name
+        },
+        complaint: {
+          select: { id: true }, // Get related complaint ID
+        },
+      },
+      orderBy: {
+        createdAt: "desc", // Show newest first
+      },
+    });
+
+    res.status(200).json({
+      success: true,
+      count: feedbacks.length,
+      data: feedbacks,
+    });
+  } catch (error) {
+    console.error("Error fetching all feedbacks:", error);
+    return res.status(500).json({ message: "Failed to fetch feedbacks" });
   }
 };

@@ -12,8 +12,10 @@ import {
   getFeedbackForComplaint,
   getAverageRatings,
   getTopRatedDepartments,
+  getAllFeedbacks,
 } from "../controllers/feedbackController";
 import { protect } from "../middlewares/authMiddleware";
+
 
 const router = express.Router();
 
@@ -34,5 +36,13 @@ router.get("/ratings/average", getAverageRatings);
 
 // 🏆 Get top rated departments
 router.get("/ratings/top-departments", getTopRatedDepartments);
+
+// 📋 GET ALL FEEDBACKS (FOR ADMIN PANEL)
+router
+  .route("/")
+  .get(
+    protect, // Use only 'protect' for now
+    getAllFeedbacks
+  );
 
 export default router;
