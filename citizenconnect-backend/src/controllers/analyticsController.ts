@@ -30,6 +30,11 @@ export const getDashboardStats = async (req: AuthenticatedRequest, res: Response
 
     // Total complaints
     const totalComplaints = await prisma.complaint.count({ where: whereClause });
+    const totalFeedbacks = await prisma.feedback.count({
+      where: {
+        complaint: whereClause,
+      },
+    });
 
     // Complaints by status
     const statusBreakdown = await prisma.complaint.groupBy({
@@ -104,6 +109,7 @@ export const getDashboardStats = async (req: AuthenticatedRequest, res: Response
     res.status(200).json({
       overview: {
         total: totalComplaints,
+        feedbackCount: totalFeedbacks,
         active: activeComplaints,
         closed: statusStats.closed,
         todayNew: todayComplaints,

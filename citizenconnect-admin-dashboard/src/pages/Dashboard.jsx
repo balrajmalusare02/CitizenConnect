@@ -44,7 +44,7 @@ const transformedAnalytics = {
   underReviewComplaints: analyticsRes.statusBreakdown.inProgress,
   pendingComplaints: analyticsRes.statusBreakdown.raised,
   closedComplaints: analyticsRes.statusBreakdown.closed,
-  feedbackCount: 0, // Your analytics endpoint doesn't send this yet
+  feedbackCount: analyticsRes.overview.feedbackCount || 0, // Your analytics endpoint doesn't send this yet
 };
 setAnalytics(transformedAnalytics);
 
