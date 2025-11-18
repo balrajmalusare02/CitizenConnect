@@ -119,16 +119,29 @@ const ComplaintsTable = ({ complaints, onRefresh, onStatusUpdate, hideColumns = 
       headerName: 'Area/Location',
       width: 180,
       headerClassName: 'table-header',
-      renderCell: (params) => (
-        <Tooltip title={params.value} arrow>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <LocationOn sx={{ fontSize: 16, color: 'text.secondary' }} />
-            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
-              {params.value}
-            </span>
-          </Box>
-        </Tooltip>
-      ),
+      renderCell: (params) => {
+        // Safely handle if location is an Object (new) or String (old) or Null
+        const addressText = params.value?.address || params.value || 'N/A';
+        const fullDetails = params.value?.ward 
+          ? `${addressText} (Ward: ${params.value.ward})` 
+          : addressText;
+
+        return (
+          <Tooltip title={fullDetails} arrow>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <LocationOn sx={{ fontSize: 16, color: 'text.secondary' }} />
+              <span style={{ 
+                overflow: 'hidden', 
+                textOverflow: 'ellipsis', 
+                whiteSpace: 'nowrap', 
+                maxWidth: '140px' 
+              }}>
+                {addressText}
+              </span>
+            </Box>
+          </Tooltip>
+        );
+      },
     },
     {
       field: 'department',
