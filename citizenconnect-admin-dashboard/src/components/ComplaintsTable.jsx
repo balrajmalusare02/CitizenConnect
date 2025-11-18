@@ -14,7 +14,7 @@ import {
   Tooltip,
 } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
-import { Refresh, Phone, Email, LocationOn, HowToReg, Info } from '@mui/icons-material';
+import { Refresh, Phone, Email, LocationOn, HowToReg, Info, Map } from '@mui/icons-material';
 import { complaintService } from '../services/complaintService';
 import AssignComplaintModal from './AssignComplaintModal';
 import ComplaintDetailModal from './ComplaintDetailModal';
@@ -114,35 +114,63 @@ const ComplaintsTable = ({ complaints, onRefresh, onStatusUpdate, hideColumns = 
         </Box>
       ),
     },
+    // --- SMART LOCATION COLUMN ---
     {
       field: 'area',
       headerName: 'Area/Location',
-      width: 180,
+      width: 220, // Slightly wider for the icon
       headerClassName: 'table-header',
       renderCell: (params) => {
-        // Safely handle if location is an Object (new) or String (old) or Null
-        const addressText = params.value?.address || params.value || 'N/A';
-        const fullDetails = params.value?.ward 
-          ? `${addressText} (Ward: ${params.value.ward})` 
-          : addressText;
+        const address = params.value;
+        // Access the hidden 'gps' field we added in Step 1
+        const gps = params.row.gps;
+        
+        // Check if we have valid coordinates (handle different naming conventions)
+        const lat = gps?.latitude || gps?.lat;
+        const lng = gps?.longitude || gps?.lng;
+        const hasCoords = lat && lng;
+
+        // Create Google Maps Link
+        const mapUrl = hasCoords 
+          ? `https://www.google.com/maps?q=${lat},${lng}` 
+          : null;
 
         return (
-          <Tooltip title={fullDetails} arrow>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <LocationOn sx={{ fontSize: 16, color: 'text.secondary' }} />
-              <span style={{ 
-                overflow: 'hidden', 
-                textOverflow: 'ellipsis', 
-                whiteSpace: 'nowrap', 
-                maxWidth: '140px' 
-              }}>
-                {addressText}
-              </span>
-            </Box>
-          </Tooltip>
+          <Box sx={{ display: 'flex', alignItems: 'center', width: '100%', gap: 1 }}>
+            {/* 1. The Address Text */}
+            <Tooltip title={address} arrow>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flex: 1, overflow: 'hidden' }}>
+                <LocationOn sx={{ fontSize: 16, color: 'text.secondary', flexShrink: 0 }} />
+                <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {address}
+                </span>
+              </Box>
+            </Tooltip>
+
+            {/* 2. The Smart Map Button (Only shows if GPS data exists) */}
+            {hasCoords && (
+              <Tooltip title="Open in Google Maps">
+                <IconButton 
+                  size="small" 
+                  color="primary" 
+                  href={mapUrl} 
+                  target="_blank"
+                  onClick={(e) => e.stopPropagation()} // Stop row click
+                  sx={{ 
+                    padding: 0.5,
+                    backgroundColor: '#e3f2fd',
+                    '&:hover': { backgroundColor: '#bbdefb' }
+                  }}
+                >
+                  <Map sx={{ fontSize: 16 }} />
+                </IconButton>
+              </Tooltip>
+            )}
+          </Box>
         );
       },
     },
+    // -----------------------------
     {
       field: 'department',
       headerName: 'Department',

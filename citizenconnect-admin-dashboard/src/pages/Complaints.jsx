@@ -35,8 +35,13 @@ const Complaints = ({ initialFilter }) => {
        id: c.id,
        complainerName: c.user?.name,
        email: c.user?.email,
-       // mobile: c.user?.mobile, // 'mobile' is not in your prisma schema
-       area: c.location, // Map 'location' to 'area'
+       // --- FIX START: Smart Mapping ---
+       // Use the real address for text. If missing, try to parse location or show fallback.
+       area: c.address || (typeof c.location === 'string' ? c.location : 'Location details pending'),
+       
+       // Pass the raw GPS object separately so we can make a map link
+       gps: c.location, 
+       // --- FIX END ---
        department: c.department || 'N/A',
        status: c.status,
        feedback: c.feedbacks?.rating ? `${c.feedbacks.rating} stars` : 'No feedback',
