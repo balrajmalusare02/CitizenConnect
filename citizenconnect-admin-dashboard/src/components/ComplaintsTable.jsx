@@ -52,7 +52,12 @@ const ComplaintsTable = ({ complaints, onRefresh, onStatusUpdate, hideColumns = 
 
   useEffect(() => {
     if (initialFilter) {
-      setFilterStatus(initialFilter);
+      // Map legacy card values to new dropdown values
+      if (initialFilter === 'under review') {
+        setFilterStatus('inprogress');
+      } else {
+        setFilterStatus(initialFilter);
+      }
     }
   }, [initialFilter]);
 
@@ -220,25 +225,32 @@ const ComplaintsTable = ({ complaints, onRefresh, onStatusUpdate, hideColumns = 
 
   const filteredColumns = columns.filter(col => !hideColumns.includes(col.field));
 
-  // Filter complaints
+// Filter complaints
   const filteredComplaints = complaints?.filter((complaint) => {
     const complaintStatus = complaint.status?.toLowerCase(); // e.g., 'raised', 'inprogress'
-    const filter = filterStatus; // e.g., 'all', 'pending', 'under review'
+    const filter = filterStatus; // e.g., 'all', 'pending', 'inprogress'
 
     let matchesStatus = false;
+
     if (filter === 'all') {
       matchesStatus = true;
     } else if (filter === 'pending') {
-      // 'pending' filter should catch 'Raised' OR 'Acknowledged'
-      matchesStatus = (complaintStatus === 'raised' || complaintStatus === 'acknowledged');
-    } else if (filter === 'under review') {
-      // 'under review' filter should catch 'InProgress'
-      matchesStatus = (complaintStatus === 'inprogress');
+      // User Definition: "All active complaints except resolved and closed"
+      // This covers: Raised, Acknowledged, InProgress
+      matchesStatus = ['raised', 'acknowledged', 'inprogress'].includes(complaintStatus);
+    } else if (filter === 'acknowledged') {
+      matchesStatus = complaintStatus === 'acknowledged';
+    } else if (filter === 'inprogress') {
+      matchesStatus = complaintStatus === 'inprogress';
+    } else if (filter === 'resolved') {
+      matchesStatus = complaintStatus === 'resolved';
+    } else if (filter === 'closed') {
+      matchesStatus = complaintStatus === 'closed';
     } else {
-      // For all others ('resolved', 'closed', 'under resolving'),
-      // we assume a direct match is correct.
-      matchesStatus = (complaintStatus === filter);
+      // Fallback for exact matches
+      matchesStatus = complaintStatus === filter;
     }
+
     const matchesSearch =
       searchText === '' ||
       complaint.complainerName?.toLowerCase().includes(searchText.toLowerCase()) ||
@@ -246,7 +258,7 @@ const ComplaintsTable = ({ complaints, onRefresh, onStatusUpdate, hideColumns = 
       complaint.email?.toLowerCase().includes(searchText.toLowerCase()) ||
       complaint.area?.toLowerCase().includes(searchText.toLowerCase()) ||
       complaint.department?.toLowerCase().includes(searchText.toLowerCase());
-      
+
     return matchesStatus && matchesSearch;
   });
 
@@ -283,9 +295,9 @@ const ComplaintsTable = ({ complaints, onRefresh, onStatusUpdate, hideColumns = 
               onChange={(e) => setFilterStatus(e.target.value)}
             >
               <MenuItem value="all">All Status</MenuItem>
-              <MenuItem value="pending">Pending</MenuItem>
-              <MenuItem value="under review">Under Review</MenuItem>
-              <MenuItem value="under resolving">Under Resolving</MenuItem>
+              <MenuItem value="pending">Pending (All Active)</MenuItem>
+              <MenuItem value="acknowledged">Acknowledged</MenuItem>
+              <MenuItem value="inprogress">In Progress</MenuItem>
               <MenuItem value="resolved">Resolved</MenuItem>
               <MenuItem value="closed">Closed</MenuItem>
             </Select>
