@@ -114,30 +114,30 @@ const ComplaintsTable = ({ complaints, onRefresh, onStatusUpdate, hideColumns = 
         </Box>
       ),
     },
-    // --- SMART LOCATION COLUMN ---
+    // --- SMART LOCATION COLUMN (With Map Button) ---
     {
       field: 'area',
       headerName: 'Area/Location',
-      width: 220, // Slightly wider for the icon
+      width: 220, 
       headerClassName: 'table-header',
       renderCell: (params) => {
         const address = params.value;
-        // Access the hidden 'gps' field we added in Step 1
+        // Access the hidden 'gps' field
         const gps = params.row.gps;
         
-        // Check if we have valid coordinates (handle different naming conventions)
+        // Check for coordinates
         const lat = gps?.latitude || gps?.lat;
         const lng = gps?.longitude || gps?.lng;
         const hasCoords = lat && lng;
 
         // Create Google Maps Link
         const mapUrl = hasCoords 
-          ? `https://www.google.com/maps?q=${lat},${lng}` 
+          ? `https://www.google.com/maps/search/?api=1&query=${lat},${lng}` 
           : null;
 
         return (
           <Box sx={{ display: 'flex', alignItems: 'center', width: '100%', gap: 1 }}>
-            {/* 1. The Address Text */}
+            {/* Address Text */}
             <Tooltip title={address} arrow>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flex: 1, overflow: 'hidden' }}>
                 <LocationOn sx={{ fontSize: 16, color: 'text.secondary', flexShrink: 0 }} />
@@ -147,7 +147,7 @@ const ComplaintsTable = ({ complaints, onRefresh, onStatusUpdate, hideColumns = 
               </Box>
             </Tooltip>
 
-            {/* 2. The Smart Map Button (Only shows if GPS data exists) */}
+            {/* Map Button */}
             {hasCoords && (
               <Tooltip title="Open in Google Maps">
                 <IconButton 
@@ -155,7 +155,7 @@ const ComplaintsTable = ({ complaints, onRefresh, onStatusUpdate, hideColumns = 
                   color="primary" 
                   href={mapUrl} 
                   target="_blank"
-                  onClick={(e) => e.stopPropagation()} // Stop row click
+                  onClick={(e) => e.stopPropagation()}
                   sx={{ 
                     padding: 0.5,
                     backgroundColor: '#e3f2fd',

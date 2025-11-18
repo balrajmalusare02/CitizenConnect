@@ -30,25 +30,32 @@ const Complaints = ({ initialFilter }) => {
      const complaintsRes = response.complaints || [];
  
      // Map the backend data to fit the table component
-     const formattedComplaints = complaintsRes.map(c => ({
-       ...c,
-       id: c.id,
-       complainerName: c.user?.name,
-       email: c.user?.email,
-       // --- FIX START: Smart Mapping ---
-       // Use the real address for text. If missing, try to parse location or show fallback.
-       area: c.address || (typeof c.location === 'string' ? c.location : 'Location details pending'),
-       
-       // Pass the raw GPS object separately so we can make a map link
-       gps: c.location, 
-       // --- FIX END ---
-       department: c.department || 'N/A',
-       status: c.status,
-       feedback: c.feedbacks?.rating ? `${c.feedbacks.rating} stars` : 'No feedback',
-       createdAt: c.createdAt,
-       assignedToId: c.assignedToId,
-       assignedToName: c.assignedTo?.name || null,
-     }));
+     const formattedComplaints = complaintsRes.map(c => {
+      // Safely handle the location object
+      const loc = c.location || {};
+      // Check if 'address' exists inside the location object
+      const addressText = loc.address || (typeof c.location === 'string' ? c.location : 'Location details pending');
+
+      return {
+        ...c,
+        id: c.id,
+        complainerName: c.user?.name,
+        email: c.user?.email,
+        
+        // --- FIX: Use the extracted address text ---
+        area: addressText, 
+        
+        // --- FIX: Pass the full location object for the Map button ---
+        gps: c.location, 
+
+        department: c.department || 'N/A',
+        status: c.status,
+        feedback: c.feedbacks?.rating ? `${c.feedbacks.rating} stars` : 'No feedback',
+        createdAt: c.createdAt,
+        assignedToId: c.assignedToId,
+        assignedToName: c.assignedTo?.name || null,
+      };
+    });
  
      setComplaints(formattedComplaints);
       setLastUpdate(new Date());
