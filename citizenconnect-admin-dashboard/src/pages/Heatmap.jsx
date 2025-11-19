@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
 import { Box, Typography, CircularProgress, Alert } from '@mui/material';
 import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import L from 'leaflet'; // Import L for custom icons
+import L from 'leaflet';
 import { complaintService } from '../services/complaintService';
 
 // --- FIX for default Leaflet icon ---
@@ -38,19 +37,18 @@ const MapFocusHandler = ({ coords }) => {
   return null;
 };
 
-const Heatmap = () => {
-  const location = useLocation();
+// Main Heatmap Component
+const Heatmap = ({ focusData }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   
-  // --- CRITICAL: Initialize these as empty arrays [] ---
+  // Initialize as empty arrays
   const [mapPoints, setMapPoints] = useState([]); 
   const [zones, setZones] = useState([]); 
 
-  // --- SAFE STATE HANDLING ---
-  const state = location.state || {}; 
-  const focusCoords = state.focusLat && state.focusLng 
-    ? { lat: state.focusLat, lng: state.focusLng }
+  // Extract focus coordinates from props (passed from AppLayout)
+  const focusCoords = focusData?.focusLat && focusData?.focusLng 
+    ? { lat: focusData.focusLat, lng: focusData.focusLng }
     : null;
 
   useEffect(() => {
@@ -58,6 +56,7 @@ const Heatmap = () => {
       try {
         setLoading(true);
         setError('');
+        
         // Fetch both data points in parallel
         const [pointsRes, zonesRes] = await Promise.all([
           complaintService.getHeatmapData(),
@@ -65,8 +64,8 @@ const Heatmap = () => {
         ]);
 
         // Ensure we always set an array, even if backend sends null
-        setMapPoints(Array.isArray(pointsRes) ? pointsRes : []);
-        setZones(Array.isArray(zonesRes) ? zonesRes : []);
+        setMapPoints(Array.isArray(pointsRes.points) ? pointsRes.points : []);
+        setZones(Array.isArray(zonesRes.zones) ? zonesRes.zones : []);
       } catch (err) {
         console.error('Error loading heatmap data:', err);
         setError('Failed to load heatmap visualization.');
@@ -123,17 +122,17 @@ const Heatmap = () => {
           style={{ height: '100%', width: '100%' }}
         >
           {/* Focus Handler */}
-          <MapFocusHandler coords={focusCoords} />
+          {focusCoords && <MapFocusHandler coords={focusCoords} />}
 
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           />
 
-          {/* Draw Severity Zones (Circles) - Added optional chaining (?) for extra safety */}
-          {zones?.map((zone) => (
+          {/* Draw Severity Zones (Circles) */}
+          {zones?.map((zone, index) => (
             <Circle
-              key={`${zone.coordinates.lat}-${zone.coordinates.lng}`}
+              key={`zone-${index}-${zone.coordinates.lat}-${zone.coordinates.lng}`}
               center={[zone.coordinates.lat, zone.coordinates.lng]}
               radius={zone.radius}
               pathOptions={{ 

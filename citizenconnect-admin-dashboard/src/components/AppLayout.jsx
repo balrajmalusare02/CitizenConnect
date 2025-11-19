@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
-import { Box, Toolbar, Container, Typography } from '@mui/material';
+import React, { useState } from 'react';
+import { Box, Toolbar, Container } from '@mui/material';
 import Sidebar from './Sidebar';
 import Header from './Header'; 
 import Footer from './Footer'; 
@@ -18,25 +17,17 @@ const AppLayout = ({ userRole }) => {
   const [currentPage, setCurrentPage] = useState('dashboard');
   const [initialFilter, setInitialFilter] = useState(null);
   
-  // --- NEW: Sync Sidebar with URL ---
-  const location = useLocation();
+  // State to pass heatmap focus data
+  const [heatmapFocus, setHeatmapFocus] = useState(null);
 
-  useEffect(() => {
-    // Extract page name from URL (e.g., "/heatmap" -> "heatmap")
-    const path = location.pathname.replace('/', '').toLowerCase();
-    
-    // List of valid pages to switch to
-    const validPages = ['dashboard', 'complaints', 'analytics', 'heatmap', 'profile', 'feedback'];
-    
-    if (validPages.includes(path)) {
-      setCurrentPage(path);
-    }
-  }, [location]);
-  // ----------------------------------
-
-  const handlePageChange = (page, filter = null) => {
+  const handlePageChange = (page, filter = null, focusData = null) => {
     setCurrentPage(page);
     setInitialFilter(filter);
+    
+    // If navigating to heatmap with focus data, store it
+    if (page === 'heatmap' && focusData) {
+      setHeatmapFocus(focusData);
+    }
   };
 
   const renderPage = () => {
@@ -60,11 +51,11 @@ const AppLayout = ({ userRole }) => {
       case 'dashboard':
         return <Dashboard onPageChange={handlePageChange} />;
       case 'complaints':
-        return <Complaints initialFilter={initialFilter} />;
+        return <Complaints initialFilter={initialFilter} onPageChange={handlePageChange} />;
       case 'analytics':
         return <Analytics />;
       case 'heatmap':
-        return <Heatmap />;
+        return <Heatmap focusData={heatmapFocus} />;
       case 'profile':
         return <Profile />;
       case 'feedback':

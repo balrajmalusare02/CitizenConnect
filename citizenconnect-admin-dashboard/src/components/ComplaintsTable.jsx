@@ -13,14 +13,19 @@ import {
   Tooltip,
 } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import { Refresh, Phone, Email, LocationOn, HowToReg, Info, Map } from '@mui/icons-material';
 import { complaintService } from '../services/complaintService';
 import AssignComplaintModal from './AssignComplaintModal';
 import ComplaintDetailModal from './ComplaintDetailModal';
 
-const ComplaintsTable = ({ complaints, onRefresh, onStatusUpdate, hideColumns = [], initialFilter }) => {
-  const navigate = useNavigate(); // Hook for navigation
+const ComplaintsTable = ({ 
+  complaints, 
+  onRefresh, 
+  onStatusUpdate, 
+  hideColumns = [], 
+  initialFilter,
+  onPageChange // NEW: Accept navigation handler from parent
+}) => {
   const [filterStatus, setFilterStatus] = useState('all');
   const [searchText, setSearchText] = useState('');
 
@@ -70,6 +75,18 @@ const ComplaintsTable = ({ complaints, onRefresh, onStatusUpdate, hideColumns = 
     } catch (error) {
       console.error('Failed to update status:', error);
       alert('Failed to update complaint status');
+    }
+  };
+
+  // Handle "View on Map" button click
+  const handleViewOnMap = (lat, lng, complaintId) => {
+    if (onPageChange) {
+      // Navigate to heatmap page with focus data
+      onPageChange('heatmap', null, { 
+        focusLat: lat, 
+        focusLng: lng, 
+        focusId: complaintId 
+      });
     }
   };
 
@@ -128,21 +145,14 @@ const ComplaintsTable = ({ complaints, onRefresh, onStatusUpdate, hideColumns = 
             </Tooltip>
 
             {/* View on Map Button */}
-            {hasCoords && (
+            {hasCoords && onPageChange && (
               <Tooltip title="View on Heatmap">
                 <IconButton 
                   size="small" 
                   color="primary" 
                   onClick={(e) => {
                     e.stopPropagation(); 
-                    // Navigate to Heatmap and pass coordinates
-                    navigate('/heatmap', { 
-                      state: { 
-                        focusLat: lat, 
-                        focusLng: lng, 
-                        focusId: params.row.id 
-                      } 
-                    });
+                    handleViewOnMap(lat, lng, params.row.id);
                   }}
                   sx={{ 
                     padding: 0.5,
