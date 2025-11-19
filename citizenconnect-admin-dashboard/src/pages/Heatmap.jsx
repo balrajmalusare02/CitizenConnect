@@ -40,12 +40,19 @@ const MapFocusHandler = ({ coords }) => {
 };
 
 const Heatmap = () => {
-  const { t } = useTranslation();
   const location = useLocation();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [mapPoints, setMapPoints] = useState([]);
   const [zones, setZones] = useState([]);
+
+  // --- SAFE STATE HANDLING (Fixes the crash) ---
+  // If location.state is null (e.g., opened from sidebar), use empty object
+  const state = location.state || {}; 
+  const focusCoords = state.focusLat && state.focusLng 
+    ? { lat: state.focusLat, lng: state.focusLng }
+    : null;
+  // --------------------------------------------
 
   useEffect(() => {
     const fetchData = async () => {
@@ -58,66 +65,66 @@ const Heatmap = () => {
           complaintService.getSeverityZones(),
         ]);
 
-        setMapPoints(pointsRes.points || []);
-        setZones(zonesRes.zones || []);
+        setMapPoints(pointsRes);
+        setZones(zonesRes);
       } catch (err) {
-        console.error('Error fetching map data:', err);
-        setError('Failed to load heatmap data.');
+        console.error('Error loading heatmap data:', err);
+        setError('Failed to load heatmap visualization.');
       } finally {
         setLoading(false);
       }
     };
+
     fetchData();
   }, []);
-
-  const focusCoords = location.state?.focusLat && location.state?.focusLng 
-    ? { lat: location.state.focusLat, lng: location.state.focusLng }
-    : null;
 
   if (loading) return <CenterLoader />;
 
   return (
     <Box sx={{ height: '85vh', position: 'relative' }}>
-       {/* ... (Title and Legend code remains same) ... */}
-      
+      {/* Header / Title */}
+      <Box sx={{ 
+        position: 'absolute', 
+        top: 20, 
+        right: 20, 
+        zIndex: 1000,
+        backgroundColor: 'white',
+        padding: 2,
+        borderRadius: 2,
+        boxShadow: 3,
+        maxWidth: 300
+      }}>
+        <Typography variant="h6" fontWeight="bold" gutterBottom>
+          City Heatmap
+        </Typography>
+        <Typography variant="body2" color="text.secondary" paragraph>
+          Visualizing complaint density and severity zones.
+        </Typography>
+        
+        {/* Legend */}
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+          <LegendItem color="green" label="Low Severity" />
+          <LegendItem color="yellow" label="Medium Severity" />
+          <LegendItem color="orange" label="High Severity" />
+          <LegendItem color="red" label="Critical Zone" />
+        </Box>
+      </Box>
+
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+      )}
+
       <Box sx={{ height: '100%', width: '100%', borderRadius: 2, overflow: 'hidden', boxShadow: 3 }}>
         <MapContainer
           center={focusCoords ? [focusCoords.lat, focusCoords.lng] : [19.8762, 75.3433]} // Use focus or default
           zoom={focusCoords ? 18 : 13} // Zoom in if focused
           style={{ height: '100%', width: '100%' }}
         >
-          {/* 3. Add the Focus Handler here inside MapContainer */}
+          {/* Add the Focus Handler here inside MapContainer */}
           <MapFocusHandler coords={focusCoords} />
 
-          <TileLayer
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          />
-          
-          {/* ... (Rest of your Circles and Markers code remains exactly the same) ... */}
-          
-        </MapContainer>
-      </Box>
-    </Box>
-  );
-};
-
-  if (loading) {
-    return <CenterLoader />;
-  }
-
-  return (
-    <Box sx={{ py: 4, height: '100%', display: 'flex', flexDirection: 'column' }}>
-      <Typography variant="h4" fontWeight="bold" gutterBottom sx={{ px: 4 }}>
-        Complaints Heatmap
-      </Typography>
-      {error && <Alert severity="error" sx={{ mx: 4, mb: 2 }}>{error}</Alert>}
-      <Box sx={{ flexGrow: 1, height: '80vh', p: 4 }}>
-        <MapContainer 
-          center={[20.5937, 78.9629]} // Centered on India
-          zoom={5} 
-          style={{ height: '100%', width: '100%', borderRadius: '12px' }}
-        >
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -126,7 +133,7 @@ const Heatmap = () => {
           {/* Draw Severity Zones (Circles) */}
           {zones.map((zone) => (
             <Circle
-              key={zone.coordinates.lat + zone.coordinates.lng}
+              key={`${zone.coordinates.lat}-${zone.coordinates.lng}`}
               center={[zone.coordinates.lat, zone.coordinates.lng]}
               radius={zone.radius}
               pathOptions={{ 
@@ -159,7 +166,14 @@ const Heatmap = () => {
       </Box>
     </Box>
   );
+};
 
+const LegendItem = ({ color, label }) => (
+  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+    <Box sx={{ width: 16, height: 16, borderRadius: '50%', backgroundColor: color }} />
+    <Typography variant="caption">{label}</Typography>
+  </Box>
+);
 
 const CenterLoader = () => (
   <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Box, Toolbar, Container, Typography } from '@mui/material';
 import Sidebar from './Sidebar';
 import Header from './Header'; // Import Header
@@ -14,6 +15,16 @@ import Profile from '../pages/Profile';
 import Feedback from '../pages/Feedback';
 
 const AppLayout = ({ userRole }) => {
+  const location = useLocation();
+  useEffect(() => {
+    // Sync sidebar with current URL
+    const path = location.pathname.replace('/', '').toLowerCase();
+    const validPages = ['dashboard', 'complaints', 'analytics', 'heatmap', 'profile', 'feedback'];
+    if (validPages.includes(path)) {
+      setCurrentPage(path);
+    }
+  }, [location]);
+  
   const [currentPage, setCurrentPage] = useState('dashboard');
   const [initialFilter, setInitialFilter] = useState(null);
 
