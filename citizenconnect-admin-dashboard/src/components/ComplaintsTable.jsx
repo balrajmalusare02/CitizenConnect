@@ -14,12 +14,15 @@ import {
   Tooltip,
 } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
+import { useNavigate } from 'react-router-dom';
 import { Refresh, Phone, Email, LocationOn, HowToReg, Info, Map } from '@mui/icons-material';
 import { complaintService } from '../services/complaintService';
 import AssignComplaintModal from './AssignComplaintModal';
 import ComplaintDetailModal from './ComplaintDetailModal';
 
+
 const ComplaintsTable = ({ complaints, onRefresh, onStatusUpdate, hideColumns = [], initialFilter }) => {
+  const navigate = useNavigate()
   const [filterStatus, setFilterStatus] = useState('all');
   const [searchText, setSearchText] = useState('');
 
@@ -122,18 +125,12 @@ const ComplaintsTable = ({ complaints, onRefresh, onStatusUpdate, hideColumns = 
       headerClassName: 'table-header',
       renderCell: (params) => {
         const address = params.value;
-        // Access the hidden 'gps' field
         const gps = params.row.gps;
         
         // Check for coordinates
         const lat = gps?.latitude || gps?.lat;
         const lng = gps?.longitude || gps?.lng;
         const hasCoords = lat && lng;
-
-        // Create Google Maps Link
-        const mapUrl = hasCoords 
-          ? `https://www.google.com/maps/search/?api=1&query=${lat},${lng}` 
-          : null;
 
         return (
           <Box sx={{ display: 'flex', alignItems: 'center', width: '100%', gap: 1 }}>
@@ -147,15 +144,23 @@ const ComplaintsTable = ({ complaints, onRefresh, onStatusUpdate, hideColumns = 
               </Box>
             </Tooltip>
 
-            {/* Map Button */}
+            {/* Internal Map Button */}
             {hasCoords && (
-              <Tooltip title="Open in Google Maps">
+              <Tooltip title="View on Heatmap">
                 <IconButton 
                   size="small" 
                   color="primary" 
-                  href={mapUrl} 
-                  target="_blank"
-                  onClick={(e) => e.stopPropagation()}
+                  onClick={(e) => {
+                    e.stopPropagation(); // Prevent row click
+                    // Navigate to Heatmap and pass the coordinates
+                    navigate('/heatmap', { 
+                      state: { 
+                        focusLat: lat, 
+                        focusLng: lng,
+                        focusId: params.row.id 
+                      } 
+                    });
+                  }}
                   sx={{ 
                     padding: 0.5,
                     backgroundColor: '#e3f2fd',

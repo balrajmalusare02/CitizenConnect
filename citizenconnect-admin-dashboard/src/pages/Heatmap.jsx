@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Box, Typography, CircularProgress, Alert } from '@mui/material';
-import { MapContainer, TileLayer, Marker, Popup, Circle } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet'; // Import L for custom icons
 import { complaintService } from '../services/complaintService';
@@ -22,7 +23,25 @@ const severityColors = {
   red: 'red',
 };
 
+// Helper component to handle map movement
+const MapFocusHandler = ({ coords }) => {
+  const map = useMap();
+  
+  useEffect(() => {
+    if (coords) {
+      // Fly to the location with high zoom (18)
+      map.flyTo([coords.lat, coords.lng], 18, {
+        duration: 2 // Animation duration in seconds
+      });
+    }
+  }, [coords, map]);
+
+  return null;
+};
+
 const Heatmap = () => {
+  const { t } = useTranslation();
+  const location = useLocation();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [mapPoints, setMapPoints] = useState([]);
@@ -50,6 +69,38 @@ const Heatmap = () => {
     };
     fetchData();
   }, []);
+
+  const focusCoords = location.state?.focusLat && location.state?.focusLng 
+    ? { lat: location.state.focusLat, lng: location.state.focusLng }
+    : null;
+
+  if (loading) return <CenterLoader />;
+
+  return (
+    <Box sx={{ height: '85vh', position: 'relative' }}>
+       {/* ... (Title and Legend code remains same) ... */}
+      
+      <Box sx={{ height: '100%', width: '100%', borderRadius: 2, overflow: 'hidden', boxShadow: 3 }}>
+        <MapContainer
+          center={focusCoords ? [focusCoords.lat, focusCoords.lng] : [19.8762, 75.3433]} // Use focus or default
+          zoom={focusCoords ? 18 : 13} // Zoom in if focused
+          style={{ height: '100%', width: '100%' }}
+        >
+          {/* 3. Add the Focus Handler here inside MapContainer */}
+          <MapFocusHandler coords={focusCoords} />
+
+          <TileLayer
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          />
+          
+          {/* ... (Rest of your Circles and Markers code remains exactly the same) ... */}
+          
+        </MapContainer>
+      </Box>
+    </Box>
+  );
+};
 
   if (loading) {
     return <CenterLoader />;
@@ -108,7 +159,7 @@ const Heatmap = () => {
       </Box>
     </Box>
   );
-};
+
 
 const CenterLoader = () => (
   <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
