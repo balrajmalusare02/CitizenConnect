@@ -13,7 +13,6 @@ L.Icon.Default.mergeOptions({
   iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
   shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
 });
-// ----------------------------------
 
 // Define colors for severity
 const severityColors = {
@@ -43,16 +42,16 @@ const Heatmap = () => {
   const location = useLocation();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [mapPoints, setMapPoints] = useState([]); // Initialize as empty array
-  const [zones, setZones] = useState([]); // Initialize as empty array
+  
+  // --- CRITICAL: Initialize these as empty arrays [] ---
+  const [mapPoints, setMapPoints] = useState([]); 
+  const [zones, setZones] = useState([]); 
 
   // --- SAFE STATE HANDLING ---
-  // If location.state is null (e.g., opened from sidebar), use empty object
   const state = location.state || {}; 
   const focusCoords = state.focusLat && state.focusLng 
     ? { lat: state.focusLat, lng: state.focusLng }
     : null;
-  // --------------------------------------------
 
   useEffect(() => {
     const fetchData = async () => {
@@ -65,7 +64,7 @@ const Heatmap = () => {
           complaintService.getSeverityZones(),
         ]);
 
-        // Ensure we always set an array, even if backend sends null/undefined
+        // Ensure we always set an array, even if backend sends null
         setMapPoints(Array.isArray(pointsRes) ? pointsRes : []);
         setZones(Array.isArray(zonesRes) ? zonesRes : []);
       } catch (err) {
@@ -119,11 +118,11 @@ const Heatmap = () => {
 
       <Box sx={{ height: '100%', width: '100%', borderRadius: 2, overflow: 'hidden', boxShadow: 3 }}>
         <MapContainer
-          center={focusCoords ? [focusCoords.lat, focusCoords.lng] : [19.8762, 75.3433]} // Use focus or default
-          zoom={focusCoords ? 18 : 13} // Zoom in if focused
+          center={focusCoords ? [focusCoords.lat, focusCoords.lng] : [19.8762, 75.3433]} 
+          zoom={focusCoords ? 18 : 13} 
           style={{ height: '100%', width: '100%' }}
         >
-          {/* Add the Focus Handler here inside MapContainer */}
+          {/* Focus Handler */}
           <MapFocusHandler coords={focusCoords} />
 
           <TileLayer
@@ -131,8 +130,8 @@ const Heatmap = () => {
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           />
 
-          {/* Draw Severity Zones (Circles) */}
-          {zones.map((zone) => (
+          {/* Draw Severity Zones (Circles) - Added optional chaining (?) for extra safety */}
+          {zones?.map((zone) => (
             <Circle
               key={`${zone.coordinates.lat}-${zone.coordinates.lng}`}
               center={[zone.coordinates.lat, zone.coordinates.lng]}
@@ -151,7 +150,7 @@ const Heatmap = () => {
           ))}
 
           {/* Draw Individual Complaint Pins (Markers) */}
-          {mapPoints.map((point) => (
+          {mapPoints?.map((point) => (
             <Marker 
               key={point.id} 
               position={[point.coordinates.lat, point.coordinates.lng]}

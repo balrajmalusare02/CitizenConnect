@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-
 import {
   Card,
   CardContent,
@@ -14,15 +13,14 @@ import {
   Tooltip,
 } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import { Refresh, Phone, Email, LocationOn, HowToReg, Info, Map } from '@mui/icons-material';
 import { complaintService } from '../services/complaintService';
 import AssignComplaintModal from './AssignComplaintModal';
 import ComplaintDetailModal from './ComplaintDetailModal';
 
-
 const ComplaintsTable = ({ complaints, onRefresh, onStatusUpdate, hideColumns = [], initialFilter }) => {
-  const navigate = useNavigate()
+  const navigate = useNavigate(); // Hook for navigation
   const [filterStatus, setFilterStatus] = useState('all');
   const [searchText, setSearchText] = useState('');
 
@@ -31,7 +29,6 @@ const ComplaintsTable = ({ complaints, onRefresh, onStatusUpdate, hideColumns = 
 
   const [detailModalOpen, setDetailModalOpen] = useState(false);
   const [detailComplaintId, setDetailComplaintId] = useState(null);
-  
 
   const handleOpenAssignModal = (id) => {
     setSelectedComplaintId(id);
@@ -55,7 +52,6 @@ const ComplaintsTable = ({ complaints, onRefresh, onStatusUpdate, hideColumns = 
 
   useEffect(() => {
     if (initialFilter) {
-      // Map legacy card values to new dropdown values
       if (initialFilter === 'under review') {
         setFilterStatus('inprogress');
       } else {
@@ -63,8 +59,6 @@ const ComplaintsTable = ({ complaints, onRefresh, onStatusUpdate, hideColumns = 
       }
     }
   }, [initialFilter]);
-
-  
 
   // Handle status change
   const handleStatusChange = async (complaintId, newStatus) => {
@@ -81,18 +75,8 @@ const ComplaintsTable = ({ complaints, onRefresh, onStatusUpdate, hideColumns = 
 
   // Table columns
   let columns = [
-    {
-      field: 'id',
-      headerName: 'ID',
-      width: 80,
-      headerClassName: 'table-header',
-    },
-    {
-      field: 'complainerName',
-      headerName: 'Complainer Name',
-      width: 180,
-      headerClassName: 'table-header',
-    },
+    { field: 'id', headerName: 'ID', width: 80, headerClassName: 'table-header' },
+    { field: 'complainerName', headerName: 'Complainer Name', width: 180, headerClassName: 'table-header' },
     {
       field: 'mobile',
       headerName: 'Mobile',
@@ -117,7 +101,7 @@ const ComplaintsTable = ({ complaints, onRefresh, onStatusUpdate, hideColumns = 
         </Box>
       ),
     },
-    // --- SMART LOCATION COLUMN (With Map Button) ---
+    // --- SMART LOCATION COLUMN ---
     {
       field: 'area',
       headerName: 'Area/Location',
@@ -127,7 +111,6 @@ const ComplaintsTable = ({ complaints, onRefresh, onStatusUpdate, hideColumns = 
         const address = params.value;
         const gps = params.row.gps;
         
-        // Check for coordinates
         const lat = gps?.latitude || gps?.lat;
         const lng = gps?.longitude || gps?.lng;
         const hasCoords = lat && lng;
@@ -144,19 +127,19 @@ const ComplaintsTable = ({ complaints, onRefresh, onStatusUpdate, hideColumns = 
               </Box>
             </Tooltip>
 
-            {/* Internal Map Button */}
+            {/* View on Map Button */}
             {hasCoords && (
               <Tooltip title="View on Heatmap">
                 <IconButton 
                   size="small" 
                   color="primary" 
                   onClick={(e) => {
-                    e.stopPropagation(); // Prevent row click
-                    // Navigate to Heatmap and pass the coordinates
+                    e.stopPropagation(); 
+                    // Navigate to Heatmap and pass coordinates
                     navigate('/heatmap', { 
                       state: { 
                         focusLat: lat, 
-                        focusLng: lng,
+                        focusLng: lng, 
                         focusId: params.row.id 
                       } 
                     });
@@ -176,13 +159,7 @@ const ComplaintsTable = ({ complaints, onRefresh, onStatusUpdate, hideColumns = 
       },
     },
     // -----------------------------
-    {
-      field: 'department',
-      headerName: 'Department',
-      width: 130,
-      headerClassName: 'table-header',
-    },
-
+    { field: 'department', headerName: 'Department', width: 130, headerClassName: 'table-header' },
     {
       field: 'assignedToName',
       headerName: 'Assigned To',
@@ -194,7 +171,6 @@ const ComplaintsTable = ({ complaints, onRefresh, onStatusUpdate, hideColumns = 
         </Typography>
       ),
     },
-
     {
       field: 'status',
       headerName: 'Status',
@@ -234,55 +210,43 @@ const ComplaintsTable = ({ complaints, onRefresh, onStatusUpdate, hideColumns = 
       headerClassName: 'table-header',
       renderCell: (params) => new Date(params.value).toLocaleString('en-IN'),
     },
-
     {
-    field: 'actions',
-    headerName: 'Actions',
-    width: 120,
-    headerClassName: 'table-header',
-    renderCell: (params) => {
-      return (
-        <Box>
-          <Tooltip title="View Details">
-            <IconButton
-              color="default"
-              onClick={() => handleOpenDetailModal(params.row.id)}
-            >
-              <Info />
-            </IconButton>
-          </Tooltip>
-          {/* Only show assign button if unassigned AND not resolved/closed */}
-          {!params.row.assignedToId && params.row.status !== 'Resolved' && params.row.status !== 'Closed' && ( 
-            <Tooltip title="Assign Complaint">
-              <IconButton
-                color="primary"
-                onClick={() => handleOpenAssignModal(params.row.id)}
-              >
-                <HowToReg />
+      field: 'actions',
+      headerName: 'Actions',
+      width: 120,
+      headerClassName: 'table-header',
+      renderCell: (params) => {
+        return (
+          <Box>
+            <Tooltip title="View Details">
+              <IconButton color="default" onClick={() => handleOpenDetailModal(params.row.id)}>
+                <Info />
               </IconButton>
             </Tooltip>
-          )}
-        </Box>
-      );
-      return <Typography variant="caption">Assigned</Typography>;
-    },
-  }
+            {!params.row.assignedToId && params.row.status !== 'Resolved' && params.row.status !== 'Closed' && ( 
+              <Tooltip title="Assign Complaint">
+                <IconButton color="primary" onClick={() => handleOpenAssignModal(params.row.id)}>
+                  <HowToReg />
+                </IconButton>
+              </Tooltip>
+            )}
+          </Box>
+        );
+      },
+    }
   ];
 
   const filteredColumns = columns.filter(col => !hideColumns.includes(col.field));
 
-// Filter complaints
+  // Filter complaints logic
   const filteredComplaints = complaints?.filter((complaint) => {
-    const complaintStatus = complaint.status?.toLowerCase(); // e.g., 'raised', 'inprogress'
-    const filter = filterStatus; // e.g., 'all', 'pending', 'inprogress'
+    const complaintStatus = complaint.status?.toLowerCase(); 
+    const filter = filterStatus; 
 
     let matchesStatus = false;
-
     if (filter === 'all') {
       matchesStatus = true;
     } else if (filter === 'pending') {
-      // User Definition: "All active complaints except resolved and closed"
-      // This covers: Raised, Acknowledged, InProgress
       matchesStatus = ['raised', 'acknowledged', 'inprogress'].includes(complaintStatus);
     } else if (filter === 'acknowledged') {
       matchesStatus = complaintStatus === 'acknowledged';
@@ -293,7 +257,6 @@ const ComplaintsTable = ({ complaints, onRefresh, onStatusUpdate, hideColumns = 
     } else if (filter === 'closed') {
       matchesStatus = complaintStatus === 'closed';
     } else {
-      // Fallback for exact matches
       matchesStatus = complaintStatus === filter;
     }
 
@@ -315,11 +278,9 @@ const ComplaintsTable = ({ complaints, onRefresh, onStatusUpdate, hideColumns = 
           <Typography variant="h6" fontWeight="bold">
             All Complaints
           </Typography>
-          <Tooltip title="Refresh data">
-            <IconButton onClick={onRefresh} color="primary">
+          <IconButton onClick={onRefresh} color="primary">
               <Refresh />
-            </IconButton>
-          </Tooltip>
+          </IconButton>
         </Box>
 
         {/* Filters */}
@@ -359,16 +320,9 @@ const ComplaintsTable = ({ complaints, onRefresh, onStatusUpdate, hideColumns = 
             rowsPerPageOptions={[10, 25, 50, 100]}
             disableSelectionOnClick
             sx={{
-              '& .table-header': {
-                backgroundColor: '#f5f5f5',
-                fontWeight: 'bold',
-              },
-              '& .MuiDataGrid-cell': {
-                borderBottom: '1px solid #f0f0f0',
-              },
-              '& .MuiDataGrid-row:hover': {
-                backgroundColor: '#f9f9f9',
-              },
+              '& .table-header': { backgroundColor: '#f5f5f5', fontWeight: 'bold' },
+              '& .MuiDataGrid-cell': { borderBottom: '1px solid #f0f0f0' },
+              '& .MuiDataGrid-row:hover': { backgroundColor: '#f9f9f9' },
             }}
           />
         </Box>
@@ -377,11 +331,8 @@ const ComplaintsTable = ({ complaints, onRefresh, onStatusUpdate, hideColumns = 
             open={modalOpen}
             onClose={handleCloseAssignModal}
             complaintId={selectedComplaintId}
-            onSubmitSuccess={() => {
-              onRefresh(); // Refresh the whole table
-            }}
+            onSubmitSuccess={() => onRefresh()}
           />
-
       <ComplaintDetailModal
         open={detailModalOpen}
         onClose={handleCloseDetailModal}
