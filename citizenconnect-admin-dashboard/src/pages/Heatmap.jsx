@@ -43,10 +43,10 @@ const Heatmap = () => {
   const location = useLocation();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [mapPoints, setMapPoints] = useState([]);
-  const [zones, setZones] = useState([]);
+  const [mapPoints, setMapPoints] = useState([]); // Initialize as empty array
+  const [zones, setZones] = useState([]); // Initialize as empty array
 
-  // --- SAFE STATE HANDLING (Fixes the crash) ---
+  // --- SAFE STATE HANDLING ---
   // If location.state is null (e.g., opened from sidebar), use empty object
   const state = location.state || {}; 
   const focusCoords = state.focusLat && state.focusLng 
@@ -65,8 +65,9 @@ const Heatmap = () => {
           complaintService.getSeverityZones(),
         ]);
 
-        setMapPoints(pointsRes);
-        setZones(zonesRes);
+        // Ensure we always set an array, even if backend sends null/undefined
+        setMapPoints(Array.isArray(pointsRes) ? pointsRes : []);
+        setZones(Array.isArray(zonesRes) ? zonesRes : []);
       } catch (err) {
         console.error('Error loading heatmap data:', err);
         setError('Failed to load heatmap visualization.');
