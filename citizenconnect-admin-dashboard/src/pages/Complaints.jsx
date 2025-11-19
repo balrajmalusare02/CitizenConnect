@@ -28,6 +28,8 @@ const Complaints = ({ initialFilter }) => {
      
      // The backend response is { message, count, complaints }
      const complaintsRes = response.complaints || [];
+
+     
  
      // Map the backend data to fit the table component
      const formattedComplaints = complaintsRes.map(c => {

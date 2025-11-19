@@ -74,6 +74,7 @@ class ComplaintService {
       request.fields['description'] = description;
       request.fields['domain'] = domain;
       request.fields['category'] = category;
+      
 
       // Add location fields if they exist
       if (latitude != null) {

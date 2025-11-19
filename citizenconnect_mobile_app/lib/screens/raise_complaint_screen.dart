@@ -1,6 +1,7 @@
 import 'dart:io'; // --- NEW ---
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart'; // --- NEW ---
+import 'package:geocoding/geocoding.dart'; // 
 import 'package:image_picker/image_picker.dart'; // --- NEW ---
 import '../services/domain_service.dart';
 import '../services/complaint_service.dart'; // --- NEW ---
@@ -128,10 +129,11 @@ Future<void> _pickImage() async {
     });
   }
 }
-  // --- NEW: Function to get location ---
+
+  // --- UPDATED: Get Location & Address ---
   Future<void> _getLocation() async {
     try {
-      // Check permissions
+      // 1. Check permissions (Same as before)
       LocationPermission permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
@@ -147,15 +149,42 @@ Future<void> _pickImage() async {
         _locationMessage = "Fetching location...";
       });
 
-      // Get position
+      // 2. Get GPS Coordinates
       Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
       );
 
-      setState(() {
-        _position = position;
-        _locationMessage = "Location Acquired: ${position.latitude.toStringAsFixed(4)}, ${position.longitude.toStringAsFixed(4)}";
-      });
+      // 3. Convert GPS to Address (Reverse Geocoding)
+      try {
+        List<Placemark> placemarks = await placemarkFromCoordinates(
+          position.latitude,
+          position.longitude,
+        );
+
+        if (placemarks.isNotEmpty) {
+          Placemark place = placemarks[0];
+          // Construct a readable address string
+          String address = "${place.street}, ${place.subLocality}, ${place.locality}, ${place.postalCode}";
+          
+          setState(() {
+            _position = position;
+            // Store the address string to send to backend
+            _locationMessage = address; 
+          });
+        } else {
+           setState(() {
+            _position = position;
+            _locationMessage = "Lat: ${position.latitude}, Long: ${position.longitude}";
+          });
+        }
+      } catch (e) {
+        // Fallback if geocoding fails (e.g., no internet)
+        setState(() {
+          _position = position;
+          _locationMessage = "Lat: ${position.latitude}, Long: ${position.longitude}";
+        });
+      }
+
     } catch (e) {
       setState(() {
         _locationMessage = "Failed to get location: $e";
@@ -198,8 +227,8 @@ Future<void> _pickImage() async {
         description: _descriptionController.text,
         domain: _selectedDomain!,
         category: _selectedCategory!,
-        latitude: _position?.latitude,
-        longitude: _position?.longitude,
+        latitude: _position!.latitude,
+        longitude: _position!.longitude,
         imageFile: _imageFile,
       );
 
