@@ -82,6 +82,12 @@ const findAvailableEmployee = async (department: string): Promise<number | null>
 // 🆕 Raise a Complaint (with auto-assignment + media upload)
 export const raiseComplaint = async (req: AuthenticatedRequest, res: Response) => {
   try {
+
+    // --- DEBUG LOGS (Add these lines) ---
+    console.log("🚀 DEPLOYMENT CHECK: v3.0 - Wrapper Fix Is Active"); 
+    console.log("📍 Received Location Body:", req.body.location);
+    console.log("📍 Type of Location:", typeof req.body.location);
+    // ------------------------------------
     const { 
       title, 
       description, 
