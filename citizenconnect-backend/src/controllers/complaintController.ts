@@ -82,12 +82,6 @@ const findAvailableEmployee = async (department: string): Promise<number | null>
 // 🆕 Raise a Complaint (with auto-assignment + media upload)
 export const raiseComplaint = async (req: AuthenticatedRequest, res: Response) => {
   try {
-
-    // --- DEBUG LOGS (Add these lines) ---
-    console.log("🚀 DEPLOYMENT CHECK: v3.0 - Wrapper Fix Is Active"); 
-    console.log("📍 Received Location Body:", req.body.location);
-    console.log("📍 Type of Location:", typeof req.body.location);
-    // ------------------------------------
     const { 
       title, 
       description, 
@@ -108,8 +102,6 @@ export const raiseComplaint = async (req: AuthenticatedRequest, res: Response) =
     console.log("User from token:", req.user);
     console.log("User ID:", userId);
     console.log("Media uploaded:", mediaUrl);
-
-    console.log("RECEIVED BODY:", req.body);
     
     if (!userId) {
       return res.status(401).json({ message: "Unauthorized - User not authenticated" });
@@ -153,7 +145,7 @@ export const raiseComplaint = async (req: AuthenticatedRequest, res: Response) =
         domain,
         category,
         mediaUrl,
-        location: location ? { address: location } as any : undefined,
+        location,
         // ✅ NEW: Geo fields
         latitude: latitude ? parseFloat(latitude) : null,
         longitude: longitude ? parseFloat(longitude) : null,
@@ -191,24 +183,6 @@ export const raiseComplaint = async (req: AuthenticatedRequest, res: Response) =
       complaint,
       timestamp: new Date(),
     });
-
-    // Find all admins to create a notification for them
-    const admins = await prisma.user.findMany({
-      where: {
-        role: { in: ["CITY_ADMIN", "SUPER_ADMIN"] }
-      },
-      select: { id: true }
-    });
-
-    // Create a notification for each admin
-    for (const admin of admins) {
-      await createAndEmitNotification(
-        admin.id,
-        `New complaint #${complaint.id} ("${complaint.title}") raised by a citizen.`,
-        complaint.id,
-        "new-notification" // This will also send the socket alert
-      );
-    }
 
     // ✅ If auto-assigned, notify the employee
     if (autoAssignedEmployeeId) {
@@ -432,8 +406,6 @@ export const getComplaintsByRole = async (req: any, res: Response) => {
       include: {
         user: { select: { id: true, name: true, email: true } },
         statusUpdates: true,
-        feedbacks: true,
-        assignedTo: { select: { id: true, name: true } }
       },
       orderBy: { createdAt: "desc" },
     });
