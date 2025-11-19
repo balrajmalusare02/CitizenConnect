@@ -102,6 +102,8 @@ export const raiseComplaint = async (req: AuthenticatedRequest, res: Response) =
     console.log("User from token:", req.user);
     console.log("User ID:", userId);
     console.log("Media uploaded:", mediaUrl);
+
+    console.log("RECEIVED BODY:", req.body);
     
     if (!userId) {
       return res.status(401).json({ message: "Unauthorized - User not authenticated" });
@@ -145,7 +147,7 @@ export const raiseComplaint = async (req: AuthenticatedRequest, res: Response) =
         domain,
         category,
         mediaUrl,
-        location,
+        location: location ? { address: location } as any : undefined,
         // ✅ NEW: Geo fields
         latitude: latitude ? parseFloat(latitude) : null,
         longitude: longitude ? parseFloat(longitude) : null,
