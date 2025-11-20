@@ -13,19 +13,14 @@ import {
   Tooltip,
 } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
-import { Refresh, Phone, Email, LocationOn, HowToReg, Info, Map } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom'; // <-- Import useNavigate
+import { Refresh, Phone, Email, LocationOn, HowToReg, Info, Map } from '@mui/icons-material'; // <-- Import Map icon
 import { complaintService } from '../services/complaintService';
 import AssignComplaintModal from './AssignComplaintModal';
 import ComplaintDetailModal from './ComplaintDetailModal';
 
-const ComplaintsTable = ({ 
-  complaints, 
-  onRefresh, 
-  onStatusUpdate, 
-  hideColumns = [], 
-  initialFilter,
-  onPageChange // NEW: Accept navigation handler from parent
-}) => {
+const ComplaintsTable = ({ complaints, onRefresh, onStatusUpdate, hideColumns = [], initialFilter }) => {
+  const navigate = useNavigate(); // <-- Initialize hook
   const [filterStatus, setFilterStatus] = useState('all');
   const [searchText, setSearchText] = useState('');
 
@@ -78,18 +73,6 @@ const ComplaintsTable = ({
     }
   };
 
-  // Handle "View on Map" button click
-  const handleViewOnMap = (lat, lng, complaintId) => {
-    if (onPageChange) {
-      // Navigate to heatmap page with focus data
-      onPageChange('heatmap', null, { 
-        focusLat: lat, 
-        focusLng: lng, 
-        focusId: complaintId 
-      });
-    }
-  };
-
   // Table columns
   let columns = [
     { field: 'id', headerName: 'ID', width: 80, headerClassName: 'table-header' },
@@ -118,7 +101,7 @@ const ComplaintsTable = ({
         </Box>
       ),
     },
-    // --- SMART LOCATION COLUMN ---
+    // --- SMART LOCATION COLUMN (With View on Map Button) ---
     {
       field: 'area',
       headerName: 'Area/Location',
@@ -126,6 +109,7 @@ const ComplaintsTable = ({
       headerClassName: 'table-header',
       renderCell: (params) => {
         const address = params.value;
+        // We will ensure the 'gps' field is passed in the next step (in Complaints.jsx)
         const gps = params.row.gps;
         
         const lat = gps?.latitude || gps?.lat;
@@ -144,15 +128,22 @@ const ComplaintsTable = ({
               </Box>
             </Tooltip>
 
-            {/* View on Map Button */}
-            {hasCoords && onPageChange && (
+            {/* View on Map Button (Only visible if coordinates exist) */}
+            {hasCoords && (
               <Tooltip title="View on Heatmap">
                 <IconButton 
                   size="small" 
                   color="primary" 
                   onClick={(e) => {
-                    e.stopPropagation(); 
-                    handleViewOnMap(lat, lng, params.row.id);
+                    e.stopPropagation(); // Prevent row click
+                    // Navigate to Heatmap and pass the coordinates
+                    navigate('/heatmap', { 
+                      state: { 
+                        focusLat: lat, 
+                        focusLng: lng, 
+                        focusId: params.row.id 
+                      } 
+                    });
                   }}
                   sx={{ 
                     padding: 0.5,
