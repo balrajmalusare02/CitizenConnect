@@ -229,6 +229,7 @@ Future<void> _pickImage() async {
         category: _selectedCategory!,
         latitude: _position!.latitude,
         longitude: _position!.longitude,
+        location: _locationMessage,
         imageFile: _imageFile,
       );
 
