@@ -29,26 +29,12 @@ const Complaints = ({ initialFilter , onPageChange }) => {
      // The backend response is { message, count, complaints }
      const complaintsRes = response.complaints || [];
 
-     
  
      // Map the backend data to fit the table component
      const formattedComplaints = complaintsRes.map(c => {
       // Safely handle the location object
      const loc = c.location || {};
  
-      // 🔍 DEBUG: Log the location object to see what backend sends
-      console.log('Complaint ID:', c.id, 'Location:', c.location);
-
-      // Check if 'address' exists inside the location object
-      const addressText = loc.address || (typeof c.location === 'string' ? c.location : 'Location details pending');
-
-      const gps = {
-        lat: loc.lat || loc.latitude,
-        lng: loc.lng || loc.longitude
-      };
-
-      // 🔍 DEBUG: Log the extracted GPS coordinates
-      console.log('Extracted GPS:', gps);
 
       return {
         ...c,
@@ -57,10 +43,10 @@ const Complaints = ({ initialFilter , onPageChange }) => {
         email: c.user?.email,
         
         // --- FIX: Use the extracted address text ---
-        area: addressText, 
+        area: loc.address || 'Location details pending', 
         
         // --- FIX: Pass the full location object for the Map button ---
-        gps: (gps.lat && gps.lng) ? gps : null,
+        gps: (loc.lat && loc.lng) ? { lat: loc.lat, lng: loc.lng } : null,
 
         department: c.department || 'N/A',
         status: c.status,
