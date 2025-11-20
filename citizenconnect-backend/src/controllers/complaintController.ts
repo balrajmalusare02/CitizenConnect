@@ -343,16 +343,39 @@ export const deleteComplaint = async (req: AuthenticatedRequest, res: Response) 
 export const getAllComplaints = async (req: Request, res: Response) => {
   try {
     const complaints = await prisma.complaint.findMany({
-      include: { statusUpdates: true, user: true },
+      include: { 
+        statusUpdates: true, 
+        user: true,
+        assignedTo: { select: { id: true, name: true, email: true, department: true } },
+        feedbacks: true
+      },
       orderBy: { createdAt: "desc" },
     });
 
-    res.status(200).json(complaints);
+    // ✅ Format complaints to structure location object properly
+    const formattedComplaints = complaints.map(complaint => ({
+      ...complaint,
+      location: {
+        address: complaint.location || 'Location details pending',
+        lat: complaint.latitude,
+        lng: complaint.longitude,
+        ward: complaint.ward,
+        zone: complaint.zone,
+        district: complaint.district
+      }
+    }));
+
+    res.status(200).json({
+      message: "Complaints fetched successfully",
+      count: formattedComplaints.length,
+      complaints: formattedComplaints
+    });
   } catch (error) {
     console.error("Error fetching complaints:", error);
     res.status(500).json({ message: "Failed to fetch complaints" });
   }
 };
+
 
 // 🔍 Get Complaint by ID
 export const getComplaintById = async (req: Request, res: Response) => {
@@ -406,9 +429,25 @@ export const getComplaintsByRole = async (req: any, res: Response) => {
       include: {
         user: { select: { id: true, name: true, email: true } },
         statusUpdates: true,
+        assignedTo: { select: { id: true, name: true, email: true, department: true } },
+        feedbacks: true
       },
       orderBy: { createdAt: "desc" },
     });
+
+
+    // ✅ Format complaints to structure location object properly
+    const formattedComplaints = complaints.map(complaint => ({
+      ...complaint,
+      location: {
+        address: complaint.location || 'Location details pending',
+        lat: complaint.latitude,
+        lng: complaint.longitude,
+        ward: complaint.ward,
+        zone: complaint.zone,
+        district: complaint.district
+      }
+    }));
 
     res.status(200).json({
       message: "Complaints fetched successfully",
