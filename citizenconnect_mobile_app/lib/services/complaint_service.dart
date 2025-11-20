@@ -55,7 +55,7 @@ class ComplaintService {
     required String category,
     double? latitude,
     double? longitude,
-    String? location,
+
     File? imageFile, // This is the new part
   }) async {
     final token = await _getToken();
@@ -76,9 +76,6 @@ class ComplaintService {
       request.fields['domain'] = domain;
       request.fields['category'] = category;
       
-      if (location != null) {
-        request.fields['location'] = location; 
-      }
 
       // Add location fields if they exist
       if (latitude != null) {

@@ -145,7 +145,7 @@ export const raiseComplaint = async (req: AuthenticatedRequest, res: Response) =
         domain,
         category,
         mediaUrl,
-        location: location ? { address: location } as any : undefined,
+        location,
         // ✅ NEW: Geo fields
         latitude: latitude ? parseFloat(latitude) : null,
         longitude: longitude ? parseFloat(longitude) : null,
