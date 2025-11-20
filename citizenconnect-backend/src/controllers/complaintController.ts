@@ -353,17 +353,50 @@ export const getAllComplaints = async (req: Request, res: Response) => {
     });
 
     // ✅ Format complaints to structure location object properly
-    const formattedComplaints = complaints.map(complaint => ({
-      ...complaint,
-      location: {
-        address: complaint.location || 'Location details pending',
-        lat: complaint.latitude,
-        lng: complaint.longitude,
-        ward: complaint.ward,
-        zone: complaint.zone,
-        district: complaint.district
+    const formattedComplaints = complaints.map(complaint => {
+      // Keep the original location string/object as is
+      const originalLocation = complaint.location;
+      
+      // Create a new location object with address + coordinates
+      let locationObject;
+      
+      if (typeof originalLocation === 'string') {
+        // If location is a string (address), keep it and add coordinates
+        locationObject = {
+          address: originalLocation,
+          lat: complaint.latitude,
+          lng: complaint.longitude,
+          ward: complaint.ward,
+          zone: complaint.zone,
+          district: complaint.district
+        };
+      } else if (originalLocation && typeof originalLocation === 'object') {
+        // If location is already an object, merge with coordinates
+        locationObject = {
+          ...(originalLocation as Record<string, any>),
+          lat: complaint.latitude,
+          lng: complaint.longitude,
+          ward: complaint.ward,
+          zone: complaint.zone,
+          district: complaint.district
+        };
+      } else {
+        // If location is null/undefined
+        locationObject = {
+          address: 'Location details pending',
+          lat: complaint.latitude,
+          lng: complaint.longitude,
+          ward: complaint.ward,
+          zone: complaint.zone,
+          district: complaint.district
+        };
       }
-    }));
+
+      return {
+        ...complaint,
+        location: locationObject
+      };
+    });
 
     res.status(200).json({
       message: "Complaints fetched successfully",
@@ -375,6 +408,7 @@ export const getAllComplaints = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Failed to fetch complaints" });
   }
 };
+
 
 
 // 🔍 Get Complaint by ID
@@ -424,7 +458,7 @@ export const getComplaintsByRole = async (req: any, res: Response) => {
     }
     // CITY_ADMIN, SUPER_ADMIN, MAYOR see all
 
-    const complaints = await prisma.complaint.findMany({
+        const complaints = await prisma.complaint.findMany({
       where: whereClause,
       include: {
         user: { select: { id: true, name: true, email: true } },
@@ -435,25 +469,53 @@ export const getComplaintsByRole = async (req: any, res: Response) => {
       orderBy: { createdAt: "desc" },
     });
 
-
     // ✅ Format complaints to structure location object properly
-    const formattedComplaints = complaints.map(complaint => ({
-      ...complaint,
-      location: {
-        address: complaint.location || 'Location details pending',
-        lat: complaint.latitude,
-        lng: complaint.longitude,
-        ward: complaint.ward,
-        zone: complaint.zone,
-        district: complaint.district
+    const formattedComplaints = complaints.map(complaint => {
+      const originalLocation = complaint.location;
+      
+      let locationObject;
+      
+      if (typeof originalLocation === 'string') {
+        locationObject = {
+          address: originalLocation,
+          lat: complaint.latitude,
+          lng: complaint.longitude,
+          ward: complaint.ward,
+          zone: complaint.zone,
+          district: complaint.district
+        };
+      } else if (originalLocation && typeof originalLocation === 'object') {
+        locationObject = {
+          ...(originalLocation as Record<string, any>),
+          lat: complaint.latitude,
+          lng: complaint.longitude,
+          ward: complaint.ward,
+          zone: complaint.zone,
+          district: complaint.district
+        };
+      } else {
+        locationObject = {
+          address: 'Location details pending',
+          lat: complaint.latitude,
+          lng: complaint.longitude,
+          ward: complaint.ward,
+          zone: complaint.zone,
+          district: complaint.district
+        };
       }
-    }));
+
+      return {
+        ...complaint,
+        location: locationObject
+      };
+    });
 
     res.status(200).json({
       message: "Complaints fetched successfully",
-      count: complaints.length,
-      complaints,
+      count: formattedComplaints.length,
+      complaints: formattedComplaints,
     });
+
   } catch (error) {
     console.error("Error fetching complaints:", error);
     res.status(500).json({ message: "Failed to fetch complaints" });
