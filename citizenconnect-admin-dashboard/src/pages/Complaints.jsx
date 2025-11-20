@@ -34,7 +34,11 @@ const Complaints = ({ initialFilter , onPageChange }) => {
      // Map the backend data to fit the table component
      const formattedComplaints = complaintsRes.map(c => {
       // Safely handle the location object
-      const loc = c.location || {};
+     const loc = c.location || {};
+ 
+      // 🔍 DEBUG: Log the location object to see what backend sends
+      console.log('Complaint ID:', c.id, 'Location:', c.location);
+
       // Check if 'address' exists inside the location object
       const addressText = loc.address || (typeof c.location === 'string' ? c.location : 'Location details pending');
 
@@ -42,6 +46,9 @@ const Complaints = ({ initialFilter , onPageChange }) => {
         lat: loc.lat || loc.latitude,
         lng: loc.lng || loc.longitude
       };
+
+      // 🔍 DEBUG: Log the extracted GPS coordinates
+      console.log('Extracted GPS:', gps);
 
       return {
         ...c,
