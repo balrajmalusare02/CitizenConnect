@@ -38,6 +38,11 @@ const Complaints = ({ initialFilter , onPageChange }) => {
       // Check if 'address' exists inside the location object
       const addressText = loc.address || (typeof c.location === 'string' ? c.location : 'Location details pending');
 
+      const gps = {
+        lat: loc.lat || loc.latitude,
+        lng: loc.lng || loc.longitude
+      };
+
       return {
         ...c,
         id: c.id,
@@ -48,7 +53,7 @@ const Complaints = ({ initialFilter , onPageChange }) => {
         area: addressText, 
         
         // --- FIX: Pass the full location object for the Map button ---
-        gps: c.location, 
+        gps: (gps.lat && gps.lng) ? gps : null,
 
         department: c.department || 'N/A',
         status: c.status,

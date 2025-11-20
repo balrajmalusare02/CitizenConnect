@@ -19,7 +19,7 @@ import { complaintService } from '../services/complaintService';
 import AssignComplaintModal from './AssignComplaintModal';
 import ComplaintDetailModal from './ComplaintDetailModal';
 
-const ComplaintsTable = ({ complaints, onRefresh, onStatusUpdate, hideColumns = [], initialFilter }) => {
+const ComplaintsTable = ({ complaints, onRefresh, onStatusUpdate, hideColumns = [], initialFilter, onPageChange }) => {
   const navigate = useNavigate(); // <-- Initialize hook
   const [filterStatus, setFilterStatus] = useState('all');
   const [searchText, setSearchText] = useState('');
@@ -137,13 +137,13 @@ const ComplaintsTable = ({ complaints, onRefresh, onStatusUpdate, hideColumns = 
                   onClick={(e) => {
                     e.stopPropagation(); // Prevent row click
                     // Navigate to Heatmap and pass the coordinates
-                    navigate('/heatmap', { 
-                      state: { 
-                        focusLat: lat, 
-                        focusLng: lng, 
-                        focusId: params.row.id 
-                      } 
-                    });
+                    if (onPageChange) {
+                      onPageChange(
+                        'heatmap',
+                        null,
+                        { focusLat: lat, focusLng: lng, focusId: params.row.id }
+                      );
+                    }
                   }}
                   sx={{ 
                     padding: 0.5,
