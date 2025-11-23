@@ -219,4 +219,5 @@ Follow conventional commits and create a pull request.
 
 ---
 
-## Developed with Patience, Persistance, Excitement & Love - Balraj Malusare 🫶! 
+## Developed with Patience, Persistance, Excitement & Love 
+## - Balraj Malusare 🫶! 
