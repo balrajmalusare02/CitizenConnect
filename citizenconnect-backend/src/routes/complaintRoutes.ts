@@ -90,6 +90,24 @@ router.get("/view", protect, getComplaintsByRole);
 // 📜 Get all complaints
 router.get("/", getAllComplaints);
 
+/**
+ * @swagger
+ * /api/complaints/{id}:
+ *   get:
+ *     summary: Get details of a specific complaint
+ *     tags: [Complaints]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Complaint details
+ *       404:
+ *         description: Complaint not found
+ */
 // 🔍 Get complaint by ID
 router.get("/:id", getComplaintById);
 

@@ -19,6 +19,39 @@ import { protect } from "../middlewares/authMiddleware";
 
 const router = express.Router();
 
+/**
+ * @swagger
+ * /api/feedback/complaint/{complaintId}:
+ *   post:
+ *     summary: Submit feedback for a resolved complaint
+ *     tags: [Feedback]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: complaintId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - rating
+ *             properties:
+ *               rating:
+ *                 type: integer
+ *                 minimum: 1
+ *                 maximum: 5
+ *               comment:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Feedback submitted successfully
+ */
 // ⭐ Submit feedback for a complaint (citizen only)
 router.post("/complaint/:complaintId", protect, submitFeedback);
 

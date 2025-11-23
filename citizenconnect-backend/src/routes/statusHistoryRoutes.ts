@@ -17,6 +17,24 @@ const router = express.Router();
 // All routes require authentication
 router.use(protect);
 
+/**
+ * @swagger
+ * /api/status/complaint/{id}/history:
+ *   get:
+ *     summary: Get status timeline for a complaint
+ *     tags: [Status]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Complaint timeline
+ */
 // 📜 Get status history for specific complaint
 router.get("/complaint/:id/history", getComplaintStatusHistory);
 

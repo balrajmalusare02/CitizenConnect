@@ -16,6 +16,18 @@ const router = express.Router();
 // All routes are protected
 router.use(protect);
 
+/**
+ * @swagger
+ * /api/notifications:
+ *   get:
+ *     summary: Get user notifications
+ *     tags: [Notifications]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of notifications
+ */
 // GET /api/notifications
 router.get("/", getMyNotifications);
 
