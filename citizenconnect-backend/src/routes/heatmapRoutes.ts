@@ -19,6 +19,18 @@ const router = express.Router();
 // All routes require authentication
 router.use(protect);
 
+/**
+ * @swagger
+ * /api/heatmap/map-data:
+ *   get:
+ *     summary: Get all complaint locations for map
+ *     tags: [Heatmap]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of map points
+ */
 // 🗺️ STEP 4.5: Get real-time map data (all complaints with coordinates)
 router.get("/map-data", getMapData);
 

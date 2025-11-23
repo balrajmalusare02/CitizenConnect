@@ -21,6 +21,18 @@ const router = express.Router();
 // All routes require authentication
 router.use(protect);
 
+/**
+ * @swagger
+ * /api/analytics/dashboard:
+ *   get:
+ *     summary: Get dashboard statistics
+ *     tags: [Analytics]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Dashboard statistics
+ */
 // 📊 Dashboard statistics (admins and officials)
 router.get(
   "/dashboard",
