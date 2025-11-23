@@ -8,6 +8,14 @@
 ![Mobile](https://img.shields.io/badge/Mobile-Flutter%20%7C%20Android-blue)
 ![Web](https://img.shields.io/badge/Admin%20Panel-React%20%7C%20Vite%20%7C%20MUI-purple)
 ![Real-time](https://img.shields.io/badge/Real--Time-Socket.IO-red)
+[![API Docs](https://img.shields.io/badge/API_Docs-Swagger_UI-85ea2d.svg)](https://citizenconnect-zbfh.onrender.com/api-docs)
+
+## 🔗 Live Links
+> **⚠️ Note:** The backend is hosted on a free instance. It may take **50-60 seconds** to wake up for the first request. Please be patient!
+
+* **💻 Admin Panel:** [https://citizenconnect-admin-panel.vercel.app](https://citizenconnect-admin-panel.vercel.app)
+* **📖 API Documentation:** [https://citizenconnect-zbfh.onrender.com/api-docs](https://citizenconnect-zbfh.onrender.com/api-docs)
+* **⚙️ Backend API:** [https://citizenconnect-zbfh.onrender.com](https://citizenconnect-zbfh.onrender.com)
 
 ---
 
@@ -210,7 +218,5 @@ Contributions, suggestions, and improvements are always welcome!
 Follow conventional commits and create a pull request.
 
 ---
-
-
 
 ## Developed with Patience, Persistance, Excitement & Love - Balraj Malusare 🫶! 
