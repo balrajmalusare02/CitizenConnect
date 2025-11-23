@@ -10,6 +10,7 @@ import { logger } from "./middlewares/logger";
 import { errorHandler } from "./middlewares/errorHandler";
 import { socketAuthMiddleware } from "./middlewares/socketAuthMiddleware";
 import { setupSocketHandlers } from "./sockets/socketHandlers";
+import { setupSwagger } from "./config/swagger";
 
 import authRoutes from "./routes/authRoutes";
 import protectedRoutes from "./routes/protectedRoutes";
@@ -53,6 +54,9 @@ io.use(socketAuthMiddleware);
 
 // ✅ Setup socket event handlers
 setupSocketHandlers(io);
+
+// ✅ Setup Swagger Documentation
+setupSwagger(app);
 
 // Auth routes
 app.use("/api/auth", authRoutes);
