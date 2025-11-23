@@ -188,26 +188,26 @@ Here are the output screenshots of the project:
 * PostgreSQL Database (Local or Cloud)
 
 ## 1. Setup Backend
-cd citizenconnect-backend
-npm install
-# Add .env file with mandatory variables
-npx prisma generate
-npx prisma db push
-npm run dev
+* cd citizenconnect-backend
+* npm install
+## Add .env file with mandatory variables
+* npx prisma generate
+* npx prisma db push
+* npm run dev
 
 
 
 ## 2. Setup Admin Panel
-cd citizenconnect-admin-dashboard
-npm install
-npm run dev
+* cd citizenconnect-admin-dashboard
+* npm install
+* npm run dev
 
 
 
 ## 3. Setup Mobile App
-cd citizenconnect_mobile_app
-flutter pub get
-flutter run
+* cd citizenconnect_mobile_app
+* flutter pub get
+* flutter run
 
 
 ---
