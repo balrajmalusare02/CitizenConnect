@@ -33,6 +33,8 @@ export const protect = async (req: AuthRequest, res: Response, next: NextFunctio
         email: true,
         name: true,
         role: true,
+        ward: true,
+        department: true,
         
       },
     });

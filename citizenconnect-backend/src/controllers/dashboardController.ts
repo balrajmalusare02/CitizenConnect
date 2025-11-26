@@ -14,6 +14,7 @@ interface AuthenticatedRequest extends Request {
     name: string;
     role: string;
     department?: string;
+    ward?: string | null;
   };
 }
 
@@ -111,7 +112,7 @@ export const getWardOfficerDashboard = async (req: AuthenticatedRequest, res: Re
     let targetWard: string | undefined;
 
     if (user.role === "WARD_OFFICER") {
-      targetWard = (user as any).ward; // A Ward Officer can ONLY see their own ward
+      targetWard = user.ward || undefined; // A Ward Officer can ONLY see their own ward
     } else if (user.role === "CITY_ADMIN" || user.role === "SUPER_ADMIN") {
       targetWard = ward as string; // Admins can look up any ward
     }
@@ -124,7 +125,7 @@ export const getWardOfficerDashboard = async (req: AuthenticatedRequest, res: Re
     }
     // Get ward complaints
     const wardComplaints = await prisma.complaint.findMany({
-      where: { ward: String(ward) },
+      where: { ward: targetWard },
       include: {
         user: { select: { id: true, name: true, email: true } },
         assignedTo: { select: { id: true, name: true, department: true } },
