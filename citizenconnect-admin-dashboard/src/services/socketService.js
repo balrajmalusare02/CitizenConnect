@@ -7,8 +7,7 @@ export const socketService = {
   // Connect to socket server
   connect: () => {
     const token = authService.getToken();
-    const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:3000';
-
+    const SOCKET_URL = 'https://citizenconnect-zbfh.onrender.com';
     socket = io(SOCKET_URL, {
       auth: {
         token: token, // Send JWT token for authentication
