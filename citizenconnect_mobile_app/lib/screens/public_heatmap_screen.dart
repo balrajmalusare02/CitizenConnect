@@ -84,35 +84,47 @@ class _PublicHeatmapScreenState extends State<PublicHeatmapScreen> {
                     // Layer 1: Severity Circles
                     CircleLayer(
                       circles: _zones.map((zone) {
+                        final lat = (zone['coordinates']['lat'] as num).toDouble();
+                        final lng = (zone['coordinates']['lng'] as num).toDouble();
+                        final radius = (zone['radius'] as num).toDouble();
+
                         return CircleMarker(
-                          point: LatLng(zone['coordinates']['lat'], zone['coordinates']['lng']),
-                          radius: zone['radius'].toDouble(), // meters
+                          point: LatLng(lat, lng),
+                          radius: radius, // meters
                           useRadiusInMeter: true,
-                          color: _getZoneColor(zone['severity']),
+                          color: _getZoneColor(zone['severity'] as String),
                           borderColor: Colors.black26,
                           borderStrokeWidth: 1,
                         );
                       }).toList(),
                     ),
 
+
                     // Layer 2: Individual Complaint Pins
                     PopupMarkerLayer(
                       options: PopupMarkerLayerOptions(
                         popupController: _popupController,
                         markers: _mapPoints.map((point) {
+                          final lat = (point['coordinates']['lat'] as num).toDouble();
+                          final lng = (point['coordinates']['lng'] as num).toDouble();
+
                           return Marker(
                             width: 30.0,
                             height: 30.0,
-                            point: LatLng(point['coordinates']['lat'], point['coordinates']['lng']),
+                            point: LatLng(lat, lng),
                             child: const Icon(Icons.location_pin, color: Colors.blue, size: 30),
                           );
                         }).toList(),
+
                         popupDisplayOptions: PopupDisplayOptions(
                           builder: (BuildContext context, Marker marker) {
                             // Find the complaint data for this marker
-                            final point = _mapPoints.firstWhere(
-                              (p) => LatLng(p['coordinates']['lat'], p['coordinates']['lng']) == marker.point
-                            );
+                            final point = _mapPoints.firstWhere((p) {
+                              final lat = (p['coordinates']['lat'] as num).toDouble();
+                              final lng = (p['coordinates']['lng'] as num).toDouble();
+                              return lat == marker.point.latitude && lng == marker.point.longitude;
+                            });
+
 
                             // Build the popup UI
                             return Container(
